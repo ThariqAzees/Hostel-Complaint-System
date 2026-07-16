@@ -5,6 +5,15 @@ A production-ready Complaint Management System specifically developed for **Mant
 
 ---
 
+## Technical Documentation
+For detailed insights into specific system layers, refer to the following guides:
+*   [System Architecture Guide](./architecture.md): System layout, folder design, JWT authentication flow, and RBAC matrix.
+*   [API Documentation Reference](./api.md): Endpoints, JSON payloads, responses, file upload parameters, and CSRF protection headers.
+*   [Database Schema Guide](./database.md): Model relationships, ER diagram, index optimizations, and cascade rules.
+*   [Deployment & Installation Guide](./deployment.md): Local installation, database setup, environment variables, seeding, testing, and production builds.
+
+---
+
 ## 1. Project Overview & Architecture
 
 The application is structured as a single-block, multi-role complaint handling system. It defines strict access control boundaries for three distinct roles:
