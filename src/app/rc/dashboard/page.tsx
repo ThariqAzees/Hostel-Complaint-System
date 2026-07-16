@@ -1,5 +1,6 @@
 import React, { Suspense } from "react";
 import Link from "next/link";
+import ClickableRow from "@/components/clickable-row";
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
@@ -210,21 +211,23 @@ export default async function RcDashboardPage({ searchParams }: RcDashboardPageP
               </thead>
               <tbody>
                 {complaints.map((complaint) => (
-                  <Link href={`/rc/complaints/${complaint.id}`} key={complaint.id}>
-                    <tr className={styles.tr}>
-                      <td className={`${styles.td} ${styles.codeCell}`}>{complaint.complaint_code}</td>
-                      <td className={styles.td} style={{ fontWeight: 600 }}>{complaint.student.name}</td>
-                      <td className={styles.td}>Room {complaint.student.room_number || "—"}</td>
-                      <td className={`${styles.td} ${styles.titleCell}`}>{complaint.title}</td>
-                      <td className={styles.td}>{complaint.category}</td>
-                      <td className={styles.td}>
-                        <span className={`${styles.badge} ${getStatusBadgeClass(complaint.status)}`}>
-                          {getStatusLabel(complaint.status)}
-                        </span>
-                      </td>
-                      <td className={styles.td}>{formatDate(complaint.created_at)}</td>
-                    </tr>
-                  </Link>
+                  <ClickableRow
+                    key={complaint.id}
+                    href={`/rc/complaints/${complaint.id}`}
+                    className={styles.tr}
+                  >
+                    <td className={`${styles.td} ${styles.codeCell}`}>{complaint.complaint_code}</td>
+                    <td className={styles.td} style={{ fontWeight: 600 }}>{complaint.student.name}</td>
+                    <td className={styles.td}>Room {complaint.student.room_number || "—"}</td>
+                    <td className={`${styles.td} ${styles.titleCell}`}>{complaint.title}</td>
+                    <td className={styles.td}>{complaint.category}</td>
+                    <td className={styles.td}>
+                      <span className={`${styles.badge} ${getStatusBadgeClass(complaint.status)}`}>
+                        {getStatusLabel(complaint.status)}
+                      </span>
+                    </td>
+                    <td className={styles.td}>{formatDate(complaint.created_at)}</td>
+                  </ClickableRow>
                 ))}
               </tbody>
             </table>
