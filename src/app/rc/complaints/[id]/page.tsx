@@ -80,11 +80,9 @@ export default async function RcComplaintDetailsPage({ params }: RcComplaintDeta
 
   return (
     <div className={`${styles.container} animate-fade`}>
-      <Link href="/rc/dashboard" passHref legacyBehavior>
-        <button type="button" className={styles.backBtn}>
-          <ArrowLeft size={16} />
-          <span>Back to RC Dashboard</span>
-        </button>
+      <Link href="/rc/dashboard" className={styles.backBtn}>
+        <ArrowLeft size={16} />
+        <span>Back to RC Dashboard</span>
       </Link>
 
       <div className={styles.card}>

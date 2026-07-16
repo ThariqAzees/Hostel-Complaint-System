@@ -87,11 +87,9 @@ export default async function StudentComplaintDetailsPage({ params }: ComplaintD
 
   return (
     <div className={`${styles.container} animate-fade`}>
-      <Link href="/student/complaints" passHref legacyBehavior>
-        <button type="button" className={styles.backBtn}>
-          <ArrowLeft size={16} />
-          <span>Back to My Complaints</span>
-        </button>
+      <Link href="/student/complaints" className={styles.backBtn}>
+        <ArrowLeft size={16} />
+        <span>Back to My Complaints</span>
       </Link>
 
       <div className={styles.card}>

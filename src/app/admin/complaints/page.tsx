@@ -177,13 +177,13 @@ export default async function AdminComplaintsPage({ searchParams }: AdminComplai
             Showing <strong>{startItem}</strong> to <strong>{endItem}</strong> of <strong>{filteredCount}</strong> entries
           </div>
           <div className={styles.paginationButtons}>
-            <Link href={page > 1 ? getPageUrl(page - 1) : "#"} passHref legacyBehavior>
+            <Link href={page > 1 ? getPageUrl(page - 1) : "#"}>
               <button type="button" className={styles.pageBtn} disabled={page <= 1}>
                 <ChevronLeft size={16} />
                 <span>Previous</span>
               </button>
             </Link>
-            <Link href={page < totalPages ? getPageUrl(page + 1) : "#"} passHref legacyBehavior>
+            <Link href={page < totalPages ? getPageUrl(page + 1) : "#"}>
               <button type="button" className={styles.pageBtn} disabled={page >= totalPages}>
                 <span>Next</span>
                 <ChevronRight size={16} />

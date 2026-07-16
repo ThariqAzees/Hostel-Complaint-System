@@ -210,7 +210,7 @@ export default async function RcDashboardPage({ searchParams }: RcDashboardPageP
               </thead>
               <tbody>
                 {complaints.map((complaint) => (
-                  <Link href={`/rc/complaints/${complaint.id}`} key={complaint.id} passHref legacyBehavior>
+                  <Link href={`/rc/complaints/${complaint.id}`} key={complaint.id}>
                     <tr className={styles.tr}>
                       <td className={`${styles.td} ${styles.codeCell}`}>{complaint.complaint_code}</td>
                       <td className={styles.td} style={{ fontWeight: 600 }}>{complaint.student.name}</td>
@@ -239,13 +239,13 @@ export default async function RcDashboardPage({ searchParams }: RcDashboardPageP
             Showing <strong>{startItem}</strong> to <strong>{endItem}</strong> of <strong>{filteredCount}</strong> entries
           </div>
           <div className={styles.paginationButtons}>
-            <Link href={page > 1 ? getPageUrl(page - 1) : "#"} passHref legacyBehavior>
+            <Link href={page > 1 ? getPageUrl(page - 1) : "#"}>
               <button type="button" className={styles.pageBtn} disabled={page <= 1}>
                 <ChevronLeft size={16} />
                 <span>Previous</span>
               </button>
             </Link>
-            <Link href={page < totalPages ? getPageUrl(page + 1) : "#"} passHref legacyBehavior>
+            <Link href={page < totalPages ? getPageUrl(page + 1) : "#"}>
               <button type="button" className={styles.pageBtn} disabled={page >= totalPages}>
                 <span>Next</span>
                 <ChevronRight size={16} />
