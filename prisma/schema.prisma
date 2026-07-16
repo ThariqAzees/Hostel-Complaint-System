@@ -1,0 +1,157 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+enum Role {
+  ADMIN
+  STUDENT
+  RC
+}
+
+enum ComplaintStatus {
+  SUBMITTED
+  ACKNOWLEDGED
+  IN_PROGRESS
+  AWAITING_STUDENT_CONFIRMATION
+  AWAITING_RC_VERIFICATION
+  REOPENED
+  CLOSED
+}
+
+model User {
+  id                    String            @id @default(uuid())
+  registration_number   String?           @unique // Nullable for ADMIN and RC
+  name                  String
+  date_of_birth         DateTime?         // Nullable for ADMIN and RC. Sensitive field.
+  email                 String?
+  phone_number          String?
+  password_hash         String
+  role                  Role
+  room_number           String?           // Nullable for ADMIN and RC
+  must_change_password  Boolean           @default(true)
+  is_active             Boolean           @default(true)
+  token_version         Int               @default(0) // Revokes active JWTs on version mismatch
+  created_at            DateTime          @default(now())
+  updated_at            DateTime          @updatedAt
+
+  complaints            Complaint[]       @relation("StudentComplaints")
+  updates               ComplaintUpdate[] @relation("UpdatedByUser")
+  audit_logs            AuditLog[]        @relation("UserAuditLogs")
+  notifications         Notification[]
+  imports               StudentImport[]   @relation("UserImports")
+
+  @@index([registration_number])
+  @@index([role])
+  @@index([room_number])
+  @@index([is_active])
+  @@map("users")
+}
+
+model Complaint {
+  id              String            @id @default(uuid())
+  complaint_code  String            @unique // Concurrency-safe, e.g. MNT-2026-000001
+  student_id      String
+  student         User              @relation("StudentComplaints", fields: [student_id], references: [id], onDelete: Restrict)
+  title           String
+  description     String
+  category        String
+  image_url       String?           // Relative path to local upload (e.g. /uploads/complaints/xyz.webp)
+  status          ComplaintStatus   @default(SUBMITTED)
+  created_at      DateTime          @default(now())
+  updated_at      DateTime          @updatedAt
+  resolved_at     DateTime?
+  closed_at       DateTime?
+
+  updates         ComplaintUpdate[]
+  notifications   Notification[]
+
+  @@index([complaint_code])
+  @@index([student_id])
+  @@index([status])
+  @@index([category])
+  @@index([created_at])
+  @@map("complaints")
+}
+
+model ComplaintUpdate {
+  id              String          @id @default(uuid())
+  complaint_id    String
+  complaint       Complaint       @relation(fields: [complaint_id], references: [id], onDelete: Cascade)
+  updated_by_id   String
+  updater         User            @relation("UpdatedByUser", fields: [updated_by_id], references: [id], onDelete: Restrict)
+  previous_status ComplaintStatus
+  new_status      ComplaintStatus
+  remarks         String?
+  created_at      DateTime        @default(now())
+
+  @@index([complaint_id])
+  @@map("complaint_updates")
+}
+
+model Notification {
+  id            String      @id @default(uuid())
+  user_id       String
+  user          User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  complaint_id  String?
+  complaint     Complaint?  @relation(fields: [complaint_id], references: [id], onDelete: SetNull)
+  title         String
+  message       String
+  is_read       Boolean     @default(false)
+  created_at    DateTime    @default(now())
+
+  @@index([user_id])
+  @@index([is_read])
+  @@map("notifications")
+}
+
+model AuditLog {
+  id            String   @id @default(uuid())
+  performed_by  String   // User ID
+  user          User     @relation("UserAuditLogs", fields: [performed_by], references: [id], onDelete: Restrict)
+  action        String   // Action name (e.g., "CREATE_STUDENT", "IMPORT_EXCEL")
+  entity_type   String   // Entity type modified
+  entity_id     String   // Entity ID modified
+  description   String
+  created_at    DateTime @default(now())
+
+  @@index([performed_by])
+  @@index([created_at])
+  @@map("audit_logs")
+}
+
+model StudentImport {
+  id                 String         @id @default(uuid())
+  uploaded_by        String
+  uploader           User           @relation("UserImports", fields: [uploaded_by], references: [id], onDelete: Restrict)
+  original_filename  String
+  total_records      Int
+  successful_records Int
+  failed_records     Int
+  status             String         @default("PENDING") // PENDING, CONFIRMED, REJECTED
+  created_at         DateTime       @default(now())
+  records            ImportRecord[]
+
+  @@map("student_imports")
+}
+
+model ImportRecord {
+  id                  String         @id @default(uuid())
+  import_id           String
+  import              StudentImport  @relation(fields: [import_id], references: [id], onDelete: Cascade)
+  registration_number String
+  name                String
+  date_of_birth       DateTime
+  email               String?
+  phone_number        String?
+  room_number         String
+  status              String         // VALID, INVALID, DUPLICATE
+  error_message       String?
+  created_at          DateTime       @default(now())
+
+  @@map("import_records")
+}
