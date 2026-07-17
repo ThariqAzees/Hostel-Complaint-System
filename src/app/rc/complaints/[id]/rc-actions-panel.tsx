@@ -55,6 +55,7 @@ export default function RcActionsPanel({ complaintId, status }: RcActionsPanelPr
   const renderActions = () => {
     switch (status) {
       case "SUBMITTED":
+      case "REOPENED":
         return (
           <div className={styles.confirmationPanel} style={{ background: "var(--card-bg)" }}>
             <h3 className={styles.confirmTitle}>Acknowledge Complaint</h3>
@@ -78,61 +79,6 @@ export default function RcActionsPanel({ complaintId, status }: RcActionsPanelPr
             >
               <Clipboard size={18} />
               <span>Acknowledge Receipt</span>
-            </button>
-          </div>
-        );
-      case "ACKNOWLEDGED":
-        return (
-          <div className={styles.confirmationPanel} style={{ background: "var(--card-bg)" }}>
-            <h3 className={styles.confirmTitle}>Start Maintenance Work</h3>
-            <p className={styles.confirmSub}>
-              Mark this complaint as in-progress. The student will be notified that work has commenced.
-            </p>
-            <textarea
-              className={styles.remarksTextarea}
-              placeholder="Add optional remarks (e.g. Plumber dispatched to Room)..."
-              value={remarks}
-              onChange={(e) => setRemarks(e.target.value)}
-              disabled={isLoading}
-              maxLength={300}
-            />
-            <button
-              type="button"
-              className={`${styles.btnConfirm} ${styles.btnConfirmSuccess}`}
-              onClick={() => handleAction("START_WORK")}
-              disabled={isLoading}
-              style={{ background: "#d97706" }} /* Amber for start work */
-            >
-              <Play size={18} />
-              <span>Start Work</span>
-            </button>
-          </div>
-        );
-      case "IN_PROGRESS":
-      case "REOPENED":
-        return (
-          <div className={styles.confirmationPanel} style={{ background: "var(--card-bg)" }}>
-            <h3 className={styles.confirmTitle}>Request Student Confirmation</h3>
-            <p className={styles.confirmSub}>
-              Mark the maintenance work as done and request verification from the student.
-            </p>
-            <textarea
-              className={styles.remarksTextarea}
-              placeholder="Provide repair details (e.g. Replaced faulty switch and tested wiring)..."
-              value={remarks}
-              onChange={(e) => setRemarks(e.target.value)}
-              disabled={isLoading}
-              maxLength={300}
-            />
-            <button
-              type="button"
-              className={`${styles.btnConfirm} ${styles.btnConfirmSuccess}`}
-              onClick={() => handleAction("REQUEST_CONFIRMATION")}
-              disabled={isLoading}
-              style={{ background: "#2563eb" }} /* Blue for request confirmation */
-            >
-              <Send size={18} />
-              <span>Request Student Verification</span>
             </button>
           </div>
         );

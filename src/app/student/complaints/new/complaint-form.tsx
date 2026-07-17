@@ -31,7 +31,7 @@ export default function ComplaintForm({ student }: ComplaintFormProps) {
     "Electrical",
     "Plumbing",
     "Carpentry",
-    "Masonry",
+    "Wi-Fi",
     "Housekeeping",
     "Others",
   ];

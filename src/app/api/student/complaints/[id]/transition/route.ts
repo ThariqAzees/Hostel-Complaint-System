@@ -26,7 +26,11 @@ export async function POST(
     }
 
     // Limit actions allowed by students
-    const allowedActions: TransitionAction[] = ["STUDENT_CONFIRM_FIXED", "STUDENT_REJECT_FIXED"];
+    const allowedActions: TransitionAction[] = [
+      "STUDENT_MARK_COMPLETED",
+      "STUDENT_CONFIRM_FIXED",
+      "STUDENT_REOPEN",
+    ];
     if (!allowedActions.includes(action)) {
       return NextResponse.json({ error: "Invalid action for student role." }, { status: 400 });
     }

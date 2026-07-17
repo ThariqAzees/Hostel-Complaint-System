@@ -29,3 +29,11 @@ export const ComplaintStatus = {
 } as const
 
 export type ComplaintStatus = (typeof ComplaintStatus)[keyof typeof ComplaintStatus]
+
+
+export const ComplaintPriority = {
+  NORMAL: 'NORMAL',
+  HIGH: 'HIGH'
+} as const
+
+export type ComplaintPriority = (typeof ComplaintPriority)[keyof typeof ComplaintPriority]

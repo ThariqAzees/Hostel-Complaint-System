@@ -3,6 +3,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { checkAndUpdateOverdueComplaints } from "@/lib/state-machine";
+import { cookies } from "next/headers";
 import styles from "./dashboard.module.css";
 import { Plus, User, Award, Home, FileText, Bell, ClipboardList } from "lucide-react";
 
@@ -11,15 +13,21 @@ export const dynamic = "force-dynamic";
 export default async function StudentDashboard() {
   const studentUser = await getSessionUser();
   if (!studentUser || studentUser.role !== "STUDENT") {
+    const cookieStore = await cookies();
+    if (cookieStore.has("hostel_session")) {
+      redirect("/api/auth/logout");
+    }
     redirect("/login");
   }
+
+  // Trigger overdue sweep on load
+  await checkAndUpdateOverdueComplaints();
 
   // Fetch student complaint metrics
   const [
     totalComplaints,
     submittedComplaints,
     acknowledgedComplaints,
-    inProgressComplaints,
     awaitingStudentComplaints,
     awaitingRcVerificationComplaints,
     reopenedComplaints,
@@ -28,7 +36,6 @@ export default async function StudentDashboard() {
     prisma.complaint.count({ where: { student_id: studentUser.id } }),
     prisma.complaint.count({ where: { student_id: studentUser.id, status: "SUBMITTED" } }),
     prisma.complaint.count({ where: { student_id: studentUser.id, status: "ACKNOWLEDGED" } }),
-    prisma.complaint.count({ where: { student_id: studentUser.id, status: "IN_PROGRESS" } }),
     prisma.complaint.count({ where: { student_id: studentUser.id, status: "AWAITING_STUDENT_CONFIRMATION" } }),
     prisma.complaint.count({ where: { student_id: studentUser.id, status: "AWAITING_RC_VERIFICATION" } }),
     prisma.complaint.count({ where: { student_id: studentUser.id, status: "REOPENED" } }),
@@ -155,22 +162,28 @@ export default async function StudentDashboard() {
               </div>
             ) : (
               recentComplaints.map((complaint) => (
-                <div key={complaint.id} className={styles.complaintItem}>
-                  <div className={styles.complaintInfo}>
-                    <span className={styles.complaintCode}>{complaint.complaint_code}</span>
-                    <span className={styles.complaintTitle}>{complaint.title}</span>
-                    <div className={styles.complaintMeta}>
-                      <span>{complaint.category}</span>
-                      <span>•</span>
-                      <span>{formatDate(complaint.created_at)}</span>
+                <Link
+                  key={complaint.id}
+                  href={`/student/complaints/${complaint.id}`}
+                  style={{ textDecoration: "none", color: "inherit", display: "block" }}
+                >
+                  <div className={styles.complaintItem} style={{ cursor: "pointer" }}>
+                    <div className={styles.complaintInfo}>
+                      <span className={styles.complaintCode}>{complaint.complaint_code}</span>
+                      <span className={styles.complaintTitle}>{complaint.title}</span>
+                      <div className={styles.complaintMeta}>
+                        <span>{complaint.category}</span>
+                        <span>•</span>
+                        <span>{formatDate(complaint.created_at)}</span>
+                      </div>
+                    </div>
+                    <div className={styles.complaintRight}>
+                      <span className={`${styles.badge} ${getStatusBadgeClass(complaint.status)}`}>
+                        {getStatusLabel(complaint.status)}
+                      </span>
                     </div>
                   </div>
-                  <div className={styles.complaintRight}>
-                    <span className={`${styles.badge} ${getStatusBadgeClass(complaint.status)}`}>
-                      {getStatusLabel(complaint.status)}
-                    </span>
-                  </div>
-                </div>
+                </Link>
               ))
             )}
           </div>
@@ -190,18 +203,34 @@ export default async function StudentDashboard() {
                 <span>No new notifications.</span>
               </div>
             ) : (
-              recentNotifications.map((notif) => (
-                <div 
-                  key={notif.id} 
-                  className={`${styles.notificationItem} ${!notif.is_read ? styles.notificationUnread : ""}`}
-                >
-                  <span className={styles.notificationTitle}>{notif.title}</span>
-                  <span className={styles.notificationMsg}>{notif.message}</span>
-                  <span className={styles.notificationTime}>
-                    {formatDate(notif.created_at)}
-                  </span>
-                </div>
-              ))
+              recentNotifications.map((notif) => {
+                const itemContent = (
+                  <div 
+                    className={`${styles.notificationItem} ${!notif.is_read ? styles.notificationUnread : ""}`}
+                    style={notif.complaint_id ? { cursor: "pointer" } : undefined}
+                  >
+                    <span className={styles.notificationTitle}>{notif.title}</span>
+                    <span className={styles.notificationMsg}>{notif.message}</span>
+                    <span className={styles.notificationTime}>
+                      {formatDate(notif.created_at)}
+                    </span>
+                  </div>
+                );
+
+                if (notif.complaint_id) {
+                  return (
+                    <Link
+                      key={notif.id}
+                      href={`/student/complaints/${notif.complaint_id}`}
+                      style={{ textDecoration: "none", color: "inherit", display: "block" }}
+                    >
+                      {itemContent}
+                    </Link>
+                  );
+                }
+
+                return <div key={notif.id}>{itemContent}</div>;
+              })
             )}
           </div>
         </div>

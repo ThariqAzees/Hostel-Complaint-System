@@ -52,6 +52,11 @@ model User {
   @@map("users")
 }
 
+enum ComplaintPriority {
+  NORMAL
+  HIGH
+}
+
 model Complaint {
   id              String            @id @default(uuid())
   complaint_code  String            @unique // Concurrency-safe, e.g. MNT-2026-000001
@@ -62,6 +67,8 @@ model Complaint {
   category        String
   image_url       String?           // Relative path to local upload (e.g. /uploads/complaints/xyz.webp)
   status          ComplaintStatus   @default(SUBMITTED)
+  overdue         Boolean           @default(false)
+  priority        ComplaintPriority @default(NORMAL)
   created_at      DateTime          @default(now())
   updated_at      DateTime          @updatedAt
   resolved_at     DateTime?
@@ -75,6 +82,8 @@ model Complaint {
   @@index([status])
   @@index([category])
   @@index([created_at])
+  @@index([overdue])
+  @@index([priority])
   @@map("complaints")
 }
 

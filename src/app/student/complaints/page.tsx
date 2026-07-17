@@ -4,6 +4,8 @@ import ClickableRow from "@/components/clickable-row";
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { checkAndUpdateOverdueComplaints } from "@/lib/state-machine";
+import { cookies } from "next/headers";
 import styles from "./complaints.module.css";
 import ComplaintsFilter from "./complaints-filter";
 import { ChevronLeft, ChevronRight, FileText, Plus } from "lucide-react";
@@ -22,8 +24,15 @@ interface ComplaintsPageProps {
 export default async function StudentComplaintsPage({ searchParams }: ComplaintsPageProps) {
   const studentUser = await getSessionUser();
   if (!studentUser || studentUser.role !== "STUDENT") {
+    const cookieStore = await cookies();
+    if (cookieStore.has("hostel_session")) {
+      redirect("/api/auth/logout");
+    }
     redirect("/login");
   }
+
+  // Trigger overdue sweep on load
+  await checkAndUpdateOverdueComplaints();
 
   // Await Next.js 15+ asynchronous searchParams
   const resolvedSearchParams = await searchParams;

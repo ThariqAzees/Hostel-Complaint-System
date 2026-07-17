@@ -28,8 +28,6 @@ export async function POST(
     // Limit actions allowed by RCs
     const allowedActions: TransitionAction[] = [
       "ACKNOWLEDGE",
-      "START_WORK",
-      "REQUEST_CONFIRMATION",
       "RC_VERIFY_CLOSE",
     ];
     if (!allowedActions.includes(action)) {

@@ -205,3 +205,102 @@
   font-size: 0.9rem;
   gap: 12px;
 }
+
+/* Overdue Warning & Layout */
+.warningBanner {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: var(--radius-md);
+  padding: 14px 20px;
+  margin-bottom: 24px;
+  color: #b91c1c;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.9rem;
+  animation: pulse-border 2s infinite alternate;
+}
+
+@keyframes pulse-border {
+  from { border-color: rgba(239, 68, 68, 0.2); }
+  to { border-color: rgba(239, 68, 68, 0.6); }
+}
+
+.overdueSection {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: 24px 28px;
+  margin-bottom: 32px;
+  box-shadow: var(--shadow-sm);
+}
+
+.overdueTableHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.overdueTitle {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.overdueTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.overdueTh {
+  background: var(--input-bg);
+  padding: 12px 16px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.overdueTr {
+  border-bottom: 1px solid var(--card-border);
+  transition: background-color 0.2s ease;
+}
+
+.overdueTr:hover {
+  background: rgba(239, 68, 68, 0.02);
+}
+
+.overdueTr:last-child {
+  border-bottom: none;
+}
+
+.overdueTd {
+  padding: 14px 16px;
+  font-size: 0.85rem;
+}
+
+.codeCell {
+  font-family: monospace;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.badgeRed {
+  display: inline-flex;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: rgba(239, 68, 68, 0.15);
+  color: #b91c1c;
+}

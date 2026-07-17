@@ -4,6 +4,8 @@ import { getSessionUser } from "@/lib/auth";
 import RcSidebar from "./sidebar";
 import styles from "./rc-layout.module.css";
 
+import { cookies } from "next/headers";
+
 interface RcLayoutProps {
   children: React.ReactNode;
 }
@@ -13,6 +15,10 @@ export default async function RcLayout({ children }: RcLayoutProps) {
 
   // Redirect to login if session is invalid or user is not RC
   if (!user || user.role !== "RC") {
+    const cookieStore = await cookies();
+    if (cookieStore.has("hostel_session")) {
+      redirect("/api/auth/logout");
+    }
     redirect("/login");
   }
 

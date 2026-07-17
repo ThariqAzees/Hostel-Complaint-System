@@ -26,6 +26,19 @@ export async function proxy(request: NextRequest) {
       payload = verified as unknown as SessionPayload;
     } catch {
       // Invalid token, clear cookie in response
+      if (pathname.startsWith("/api")) {
+        const response = new NextResponse(
+          JSON.stringify({ error: "Unauthorized access" }),
+          { status: 401, headers: { "Content-Type": "application/json" } }
+        );
+        response.cookies.delete(COOKIE_NAME);
+        return response;
+      }
+      if (pathname === "/login") {
+        const response = NextResponse.next();
+        response.cookies.delete(COOKIE_NAME);
+        return response;
+      }
       const response = NextResponse.redirect(new URL("/login", request.url));
       response.cookies.delete(COOKIE_NAME);
       return response;

@@ -89,7 +89,6 @@ export default function ComplaintsFilter() {
           <option value="ALL">All Statuses</option>
           <option value="SUBMITTED">Submitted</option>
           <option value="ACKNOWLEDGED">Acknowledged</option>
-          <option value="IN_PROGRESS">In Progress</option>
           <option value="AWAITING_STUDENT_CONFIRMATION">Awaiting My Confirmation</option>
           <option value="AWAITING_RC_VERIFICATION">Awaiting RC Verification</option>
           <option value="REOPENED">Reopened</option>
@@ -108,7 +107,7 @@ export default function ComplaintsFilter() {
           <option value="Electrical">Electrical</option>
           <option value="Plumbing">Plumbing</option>
           <option value="Carpentry">Carpentry</option>
-          <option value="Masonry">Masonry</option>
+          <option value="Wi-Fi">Wi-Fi</option>
           <option value="Housekeeping">Housekeeping</option>
           <option value="Others">Others</option>
         </select>

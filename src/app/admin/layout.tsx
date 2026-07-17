@@ -5,6 +5,8 @@ import Sidebar from "./sidebar";
 import styles from "./admin-layout.module.css";
 import { APP_CONFIG } from "@/config/app-config";
 
+import { cookies } from "next/headers";
+
 interface AdminLayoutProps {
   children: React.ReactNode;
 }
@@ -14,6 +16,10 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
 
   // Redirect to login if session is invalid or user is not an admin
   if (!user || user.role !== "ADMIN") {
+    const cookieStore = await cookies();
+    if (cookieStore.has("hostel_session")) {
+      redirect("/api/auth/logout");
+    }
     redirect("/login");
   }
 

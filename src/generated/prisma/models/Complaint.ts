@@ -33,6 +33,8 @@ export type ComplaintMinAggregateOutputType = {
   category: string | null
   image_url: string | null
   status: $Enums.ComplaintStatus | null
+  overdue: boolean | null
+  priority: $Enums.ComplaintPriority | null
   created_at: Date | null
   updated_at: Date | null
   resolved_at: Date | null
@@ -48,6 +50,8 @@ export type ComplaintMaxAggregateOutputType = {
   category: string | null
   image_url: string | null
   status: $Enums.ComplaintStatus | null
+  overdue: boolean | null
+  priority: $Enums.ComplaintPriority | null
   created_at: Date | null
   updated_at: Date | null
   resolved_at: Date | null
@@ -63,6 +67,8 @@ export type ComplaintCountAggregateOutputType = {
   category: number
   image_url: number
   status: number
+  overdue: number
+  priority: number
   created_at: number
   updated_at: number
   resolved_at: number
@@ -80,6 +86,8 @@ export type ComplaintMinAggregateInputType = {
   category?: true
   image_url?: true
   status?: true
+  overdue?: true
+  priority?: true
   created_at?: true
   updated_at?: true
   resolved_at?: true
@@ -95,6 +103,8 @@ export type ComplaintMaxAggregateInputType = {
   category?: true
   image_url?: true
   status?: true
+  overdue?: true
+  priority?: true
   created_at?: true
   updated_at?: true
   resolved_at?: true
@@ -110,6 +120,8 @@ export type ComplaintCountAggregateInputType = {
   category?: true
   image_url?: true
   status?: true
+  overdue?: true
+  priority?: true
   created_at?: true
   updated_at?: true
   resolved_at?: true
@@ -198,6 +210,8 @@ export type ComplaintGroupByOutputType = {
   category: string
   image_url: string | null
   status: $Enums.ComplaintStatus
+  overdue: boolean
+  priority: $Enums.ComplaintPriority
   created_at: Date
   updated_at: Date
   resolved_at: Date | null
@@ -234,6 +248,8 @@ export type ComplaintWhereInput = {
   category?: Prisma.StringFilter<"Complaint"> | string
   image_url?: Prisma.StringNullableFilter<"Complaint"> | string | null
   status?: Prisma.EnumComplaintStatusFilter<"Complaint"> | $Enums.ComplaintStatus
+  overdue?: Prisma.BoolFilter<"Complaint"> | boolean
+  priority?: Prisma.EnumComplaintPriorityFilter<"Complaint"> | $Enums.ComplaintPriority
   created_at?: Prisma.DateTimeFilter<"Complaint"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"Complaint"> | Date | string
   resolved_at?: Prisma.DateTimeNullableFilter<"Complaint"> | Date | string | null
@@ -252,6 +268,8 @@ export type ComplaintOrderByWithRelationInput = {
   category?: Prisma.SortOrder
   image_url?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  overdue?: Prisma.SortOrder
+  priority?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
   resolved_at?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -273,6 +291,8 @@ export type ComplaintWhereUniqueInput = Prisma.AtLeast<{
   category?: Prisma.StringFilter<"Complaint"> | string
   image_url?: Prisma.StringNullableFilter<"Complaint"> | string | null
   status?: Prisma.EnumComplaintStatusFilter<"Complaint"> | $Enums.ComplaintStatus
+  overdue?: Prisma.BoolFilter<"Complaint"> | boolean
+  priority?: Prisma.EnumComplaintPriorityFilter<"Complaint"> | $Enums.ComplaintPriority
   created_at?: Prisma.DateTimeFilter<"Complaint"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"Complaint"> | Date | string
   resolved_at?: Prisma.DateTimeNullableFilter<"Complaint"> | Date | string | null
@@ -291,6 +311,8 @@ export type ComplaintOrderByWithAggregationInput = {
   category?: Prisma.SortOrder
   image_url?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  overdue?: Prisma.SortOrder
+  priority?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
   resolved_at?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -312,6 +334,8 @@ export type ComplaintScalarWhereWithAggregatesInput = {
   category?: Prisma.StringWithAggregatesFilter<"Complaint"> | string
   image_url?: Prisma.StringNullableWithAggregatesFilter<"Complaint"> | string | null
   status?: Prisma.EnumComplaintStatusWithAggregatesFilter<"Complaint"> | $Enums.ComplaintStatus
+  overdue?: Prisma.BoolWithAggregatesFilter<"Complaint"> | boolean
+  priority?: Prisma.EnumComplaintPriorityWithAggregatesFilter<"Complaint"> | $Enums.ComplaintPriority
   created_at?: Prisma.DateTimeWithAggregatesFilter<"Complaint"> | Date | string
   updated_at?: Prisma.DateTimeWithAggregatesFilter<"Complaint"> | Date | string
   resolved_at?: Prisma.DateTimeNullableWithAggregatesFilter<"Complaint"> | Date | string | null
@@ -326,6 +350,8 @@ export type ComplaintCreateInput = {
   category: string
   image_url?: string | null
   status?: $Enums.ComplaintStatus
+  overdue?: boolean
+  priority?: $Enums.ComplaintPriority
   created_at?: Date | string
   updated_at?: Date | string
   resolved_at?: Date | string | null
@@ -344,6 +370,8 @@ export type ComplaintUncheckedCreateInput = {
   category: string
   image_url?: string | null
   status?: $Enums.ComplaintStatus
+  overdue?: boolean
+  priority?: $Enums.ComplaintPriority
   created_at?: Date | string
   updated_at?: Date | string
   resolved_at?: Date | string | null
@@ -360,6 +388,8 @@ export type ComplaintUpdateInput = {
   category?: Prisma.StringFieldUpdateOperationsInput | string
   image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComplaintStatusFieldUpdateOperationsInput | $Enums.ComplaintStatus
+  overdue?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  priority?: Prisma.EnumComplaintPriorityFieldUpdateOperationsInput | $Enums.ComplaintPriority
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   resolved_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -378,6 +408,8 @@ export type ComplaintUncheckedUpdateInput = {
   category?: Prisma.StringFieldUpdateOperationsInput | string
   image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComplaintStatusFieldUpdateOperationsInput | $Enums.ComplaintStatus
+  overdue?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  priority?: Prisma.EnumComplaintPriorityFieldUpdateOperationsInput | $Enums.ComplaintPriority
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   resolved_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -395,6 +427,8 @@ export type ComplaintCreateManyInput = {
   category: string
   image_url?: string | null
   status?: $Enums.ComplaintStatus
+  overdue?: boolean
+  priority?: $Enums.ComplaintPriority
   created_at?: Date | string
   updated_at?: Date | string
   resolved_at?: Date | string | null
@@ -409,6 +443,8 @@ export type ComplaintUpdateManyMutationInput = {
   category?: Prisma.StringFieldUpdateOperationsInput | string
   image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComplaintStatusFieldUpdateOperationsInput | $Enums.ComplaintStatus
+  overdue?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  priority?: Prisma.EnumComplaintPriorityFieldUpdateOperationsInput | $Enums.ComplaintPriority
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   resolved_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -424,6 +460,8 @@ export type ComplaintUncheckedUpdateManyInput = {
   category?: Prisma.StringFieldUpdateOperationsInput | string
   image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComplaintStatusFieldUpdateOperationsInput | $Enums.ComplaintStatus
+  overdue?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  priority?: Prisma.EnumComplaintPriorityFieldUpdateOperationsInput | $Enums.ComplaintPriority
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   resolved_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -449,6 +487,8 @@ export type ComplaintCountOrderByAggregateInput = {
   category?: Prisma.SortOrder
   image_url?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  overdue?: Prisma.SortOrder
+  priority?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
   resolved_at?: Prisma.SortOrder
@@ -464,6 +504,8 @@ export type ComplaintMaxOrderByAggregateInput = {
   category?: Prisma.SortOrder
   image_url?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  overdue?: Prisma.SortOrder
+  priority?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
   resolved_at?: Prisma.SortOrder
@@ -479,6 +521,8 @@ export type ComplaintMinOrderByAggregateInput = {
   category?: Prisma.SortOrder
   image_url?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  overdue?: Prisma.SortOrder
+  priority?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
   resolved_at?: Prisma.SortOrder
@@ -541,6 +585,10 @@ export type EnumComplaintStatusFieldUpdateOperationsInput = {
   set?: $Enums.ComplaintStatus
 }
 
+export type EnumComplaintPriorityFieldUpdateOperationsInput = {
+  set?: $Enums.ComplaintPriority
+}
+
 export type ComplaintCreateNestedOneWithoutUpdatesInput = {
   create?: Prisma.XOR<Prisma.ComplaintCreateWithoutUpdatesInput, Prisma.ComplaintUncheckedCreateWithoutUpdatesInput>
   connectOrCreate?: Prisma.ComplaintCreateOrConnectWithoutUpdatesInput
@@ -579,6 +627,8 @@ export type ComplaintCreateWithoutStudentInput = {
   category: string
   image_url?: string | null
   status?: $Enums.ComplaintStatus
+  overdue?: boolean
+  priority?: $Enums.ComplaintPriority
   created_at?: Date | string
   updated_at?: Date | string
   resolved_at?: Date | string | null
@@ -595,6 +645,8 @@ export type ComplaintUncheckedCreateWithoutStudentInput = {
   category: string
   image_url?: string | null
   status?: $Enums.ComplaintStatus
+  overdue?: boolean
+  priority?: $Enums.ComplaintPriority
   created_at?: Date | string
   updated_at?: Date | string
   resolved_at?: Date | string | null
@@ -641,6 +693,8 @@ export type ComplaintScalarWhereInput = {
   category?: Prisma.StringFilter<"Complaint"> | string
   image_url?: Prisma.StringNullableFilter<"Complaint"> | string | null
   status?: Prisma.EnumComplaintStatusFilter<"Complaint"> | $Enums.ComplaintStatus
+  overdue?: Prisma.BoolFilter<"Complaint"> | boolean
+  priority?: Prisma.EnumComplaintPriorityFilter<"Complaint"> | $Enums.ComplaintPriority
   created_at?: Prisma.DateTimeFilter<"Complaint"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"Complaint"> | Date | string
   resolved_at?: Prisma.DateTimeNullableFilter<"Complaint"> | Date | string | null
@@ -655,6 +709,8 @@ export type ComplaintCreateWithoutUpdatesInput = {
   category: string
   image_url?: string | null
   status?: $Enums.ComplaintStatus
+  overdue?: boolean
+  priority?: $Enums.ComplaintPriority
   created_at?: Date | string
   updated_at?: Date | string
   resolved_at?: Date | string | null
@@ -672,6 +728,8 @@ export type ComplaintUncheckedCreateWithoutUpdatesInput = {
   category: string
   image_url?: string | null
   status?: $Enums.ComplaintStatus
+  overdue?: boolean
+  priority?: $Enums.ComplaintPriority
   created_at?: Date | string
   updated_at?: Date | string
   resolved_at?: Date | string | null
@@ -703,6 +761,8 @@ export type ComplaintUpdateWithoutUpdatesInput = {
   category?: Prisma.StringFieldUpdateOperationsInput | string
   image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComplaintStatusFieldUpdateOperationsInput | $Enums.ComplaintStatus
+  overdue?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  priority?: Prisma.EnumComplaintPriorityFieldUpdateOperationsInput | $Enums.ComplaintPriority
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   resolved_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -720,6 +780,8 @@ export type ComplaintUncheckedUpdateWithoutUpdatesInput = {
   category?: Prisma.StringFieldUpdateOperationsInput | string
   image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComplaintStatusFieldUpdateOperationsInput | $Enums.ComplaintStatus
+  overdue?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  priority?: Prisma.EnumComplaintPriorityFieldUpdateOperationsInput | $Enums.ComplaintPriority
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   resolved_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -735,6 +797,8 @@ export type ComplaintCreateWithoutNotificationsInput = {
   category: string
   image_url?: string | null
   status?: $Enums.ComplaintStatus
+  overdue?: boolean
+  priority?: $Enums.ComplaintPriority
   created_at?: Date | string
   updated_at?: Date | string
   resolved_at?: Date | string | null
@@ -752,6 +816,8 @@ export type ComplaintUncheckedCreateWithoutNotificationsInput = {
   category: string
   image_url?: string | null
   status?: $Enums.ComplaintStatus
+  overdue?: boolean
+  priority?: $Enums.ComplaintPriority
   created_at?: Date | string
   updated_at?: Date | string
   resolved_at?: Date | string | null
@@ -783,6 +849,8 @@ export type ComplaintUpdateWithoutNotificationsInput = {
   category?: Prisma.StringFieldUpdateOperationsInput | string
   image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComplaintStatusFieldUpdateOperationsInput | $Enums.ComplaintStatus
+  overdue?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  priority?: Prisma.EnumComplaintPriorityFieldUpdateOperationsInput | $Enums.ComplaintPriority
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   resolved_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -800,6 +868,8 @@ export type ComplaintUncheckedUpdateWithoutNotificationsInput = {
   category?: Prisma.StringFieldUpdateOperationsInput | string
   image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComplaintStatusFieldUpdateOperationsInput | $Enums.ComplaintStatus
+  overdue?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  priority?: Prisma.EnumComplaintPriorityFieldUpdateOperationsInput | $Enums.ComplaintPriority
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   resolved_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -815,6 +885,8 @@ export type ComplaintCreateManyStudentInput = {
   category: string
   image_url?: string | null
   status?: $Enums.ComplaintStatus
+  overdue?: boolean
+  priority?: $Enums.ComplaintPriority
   created_at?: Date | string
   updated_at?: Date | string
   resolved_at?: Date | string | null
@@ -829,6 +901,8 @@ export type ComplaintUpdateWithoutStudentInput = {
   category?: Prisma.StringFieldUpdateOperationsInput | string
   image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComplaintStatusFieldUpdateOperationsInput | $Enums.ComplaintStatus
+  overdue?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  priority?: Prisma.EnumComplaintPriorityFieldUpdateOperationsInput | $Enums.ComplaintPriority
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   resolved_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -845,6 +919,8 @@ export type ComplaintUncheckedUpdateWithoutStudentInput = {
   category?: Prisma.StringFieldUpdateOperationsInput | string
   image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComplaintStatusFieldUpdateOperationsInput | $Enums.ComplaintStatus
+  overdue?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  priority?: Prisma.EnumComplaintPriorityFieldUpdateOperationsInput | $Enums.ComplaintPriority
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   resolved_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -861,6 +937,8 @@ export type ComplaintUncheckedUpdateManyWithoutStudentInput = {
   category?: Prisma.StringFieldUpdateOperationsInput | string
   image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComplaintStatusFieldUpdateOperationsInput | $Enums.ComplaintStatus
+  overdue?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  priority?: Prisma.EnumComplaintPriorityFieldUpdateOperationsInput | $Enums.ComplaintPriority
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   resolved_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -916,6 +994,8 @@ export type ComplaintSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   category?: boolean
   image_url?: boolean
   status?: boolean
+  overdue?: boolean
+  priority?: boolean
   created_at?: boolean
   updated_at?: boolean
   resolved_at?: boolean
@@ -935,6 +1015,8 @@ export type ComplaintSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   category?: boolean
   image_url?: boolean
   status?: boolean
+  overdue?: boolean
+  priority?: boolean
   created_at?: boolean
   updated_at?: boolean
   resolved_at?: boolean
@@ -951,6 +1033,8 @@ export type ComplaintSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   category?: boolean
   image_url?: boolean
   status?: boolean
+  overdue?: boolean
+  priority?: boolean
   created_at?: boolean
   updated_at?: boolean
   resolved_at?: boolean
@@ -967,13 +1051,15 @@ export type ComplaintSelectScalar = {
   category?: boolean
   image_url?: boolean
   status?: boolean
+  overdue?: boolean
+  priority?: boolean
   created_at?: boolean
   updated_at?: boolean
   resolved_at?: boolean
   closed_at?: boolean
 }
 
-export type ComplaintOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "complaint_code" | "student_id" | "title" | "description" | "category" | "image_url" | "status" | "created_at" | "updated_at" | "resolved_at" | "closed_at", ExtArgs["result"]["complaint"]>
+export type ComplaintOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "complaint_code" | "student_id" | "title" | "description" | "category" | "image_url" | "status" | "overdue" | "priority" | "created_at" | "updated_at" | "resolved_at" | "closed_at", ExtArgs["result"]["complaint"]>
 export type ComplaintInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   updates?: boolean | Prisma.Complaint$updatesArgs<ExtArgs>
@@ -1003,6 +1089,8 @@ export type $ComplaintPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     category: string
     image_url: string | null
     status: $Enums.ComplaintStatus
+    overdue: boolean
+    priority: $Enums.ComplaintPriority
     created_at: Date
     updated_at: Date
     resolved_at: Date | null
@@ -1441,6 +1529,8 @@ export interface ComplaintFieldRefs {
   readonly category: Prisma.FieldRef<"Complaint", 'String'>
   readonly image_url: Prisma.FieldRef<"Complaint", 'String'>
   readonly status: Prisma.FieldRef<"Complaint", 'ComplaintStatus'>
+  readonly overdue: Prisma.FieldRef<"Complaint", 'Boolean'>
+  readonly priority: Prisma.FieldRef<"Complaint", 'ComplaintPriority'>
   readonly created_at: Prisma.FieldRef<"Complaint", 'DateTime'>
   readonly updated_at: Prisma.FieldRef<"Complaint", 'DateTime'>
   readonly resolved_at: Prisma.FieldRef<"Complaint", 'DateTime'>

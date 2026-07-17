@@ -5,6 +5,8 @@ import styles from "./login.module.css";
 import { ShieldAlert } from "lucide-react";
 import { APP_CONFIG } from "@/config/app-config";
 
+import Link from "next/link";
+
 export default function LoginPage() {
   const [tab, setTab] = useState<"student" | "staff">("student");
   const [username, setUsername] = useState("");

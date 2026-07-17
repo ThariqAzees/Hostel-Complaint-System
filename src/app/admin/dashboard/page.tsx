@@ -1,11 +1,27 @@
 import React from "react";
 import { prisma } from "@/lib/db";
 import styles from "./dashboard.module.css";
-import { Users, AlertCircle, CheckCircle, Clock, ClipboardList, Activity } from "lucide-react";
+import { Users, AlertCircle, CheckCircle, Clock, ClipboardList, Activity, AlertTriangle } from "lucide-react";
+import { checkAndUpdateOverdueComplaints } from "@/lib/state-machine";
+import { redirect } from "next/navigation";
+import { getSessionUser } from "@/lib/auth";
+import { cookies } from "next/headers";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
+  const adminUser = await getSessionUser();
+  if (!adminUser || adminUser.role !== "ADMIN") {
+    const cookieStore = await cookies();
+    if (cookieStore.has("hostel_session")) {
+      redirect("/api/auth/logout");
+    }
+    redirect("/login");
+  }
+
+  // Trigger overdue check sweep on dashboard load
+  await checkAndUpdateOverdueComplaints();
+
   // 1. Fetch Student metrics
   const [totalStudents, activeStudents] = await prisma.$transaction([
     prisma.user.count({ where: { role: "STUDENT" } }),
@@ -17,26 +33,37 @@ export default async function AdminDashboard() {
     totalComplaints,
     submittedComplaints,
     acknowledgedComplaints,
-    inProgressComplaints,
     awaitingStudentComplaints,
     awaitingRcVerificationComplaints,
     reopenedComplaints,
     closedComplaints,
+    totalOverdueComplaints,
   ] = await prisma.$transaction([
     prisma.complaint.count(),
     prisma.complaint.count({ where: { status: "SUBMITTED" } }),
     prisma.complaint.count({ where: { status: "ACKNOWLEDGED" } }),
-    prisma.complaint.count({ where: { status: "IN_PROGRESS" } }),
     prisma.complaint.count({ where: { status: "AWAITING_STUDENT_CONFIRMATION" } }),
     prisma.complaint.count({ where: { status: "AWAITING_RC_VERIFICATION" } }),
     prisma.complaint.count({ where: { status: "REOPENED" } }),
     prisma.complaint.count({ where: { status: "CLOSED" } }),
+    prisma.complaint.count({ where: { overdue: true, status: { not: "CLOSED" } } }),
   ]);
 
   const activeComplaintsCount = totalComplaints - closedComplaints;
   const completedComplaintsCount = closedComplaints;
 
-  // 3. Calculate average resolution time
+  // 3. Fetch overdue complaints list
+  const overdueComplaintsList = await prisma.complaint.findMany({
+    where: { overdue: true, status: { not: "CLOSED" } },
+    include: {
+      student: {
+        select: { name: true, room_number: true },
+      },
+    },
+    orderBy: { created_at: "asc" },
+  });
+
+  // 4. Calculate average resolution time
   const resolvedOrClosedList = await prisma.complaint.findMany({
     where: { resolved_at: { not: null } },
     select: { created_at: true, resolved_at: true },
@@ -51,7 +78,7 @@ export default async function AdminDashboard() {
     averageResolutionHours = (avgMs / (1000 * 60 * 60)).toFixed(1);
   }
 
-  // 4. Fetch recent audit logs (last 5)
+  // 5. Fetch recent activity logs
   const recentLogs = await prisma.auditLog.findMany({
     take: 5,
     orderBy: { created_at: "desc" },
@@ -79,10 +106,26 @@ export default async function AdminDashboard() {
     return `${days}d ago`;
   };
 
+  const getDaysPending = (createdDate: Date) => {
+    const diffTime = Math.abs(Date.now() - createdDate.getTime());
+    return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  };
+
+  const getStatusLabel = (statusState: string) => {
+    switch (statusState) {
+      case "SUBMITTED": return "Submitted";
+      case "ACKNOWLEDGED": return "Acknowledged";
+      case "AWAITING_STUDENT_CONFIRMATION": return "Awaiting Action";
+      case "AWAITING_RC_VERIFICATION": return "Awaiting RC";
+      case "REOPENED": return "Reopened";
+      case "CLOSED": return "Closed";
+      default: return statusState;
+    }
+  };
+
   const statusItems = [
     { name: "Submitted (New)", count: submittedComplaints, color: "#64748b" }, // Slate
     { name: "Acknowledged", count: acknowledgedComplaints, color: "#a855f7" }, // Purple
-    { name: "In Progress", count: inProgressComplaints, color: "#f59e0b" }, // Amber
     { name: "Awaiting Student Confirmation", count: awaitingStudentComplaints, color: "#0ea5e9" }, // Sky
     { name: "Awaiting RC Verification", count: awaitingRcVerificationComplaints, color: "#10b981" }, // Emerald
     { name: "Reopened", count: reopenedComplaints, color: "#ef4444" }, // Rose
@@ -91,6 +134,13 @@ export default async function AdminDashboard() {
 
   return (
     <div className="animate-fade">
+      {totalOverdueComplaints > 0 && (
+        <div className={styles.warningBanner}>
+          <AlertCircle size={20} />
+          <span><strong>⚠ {totalOverdueComplaints}</strong> complaints have been pending for more than 3 days.</span>
+        </div>
+      )}
+
       <div className={styles.grid}>
         {/* KPI: Total Students */}
         <div className={styles.kpiCard}>
@@ -148,6 +198,51 @@ export default async function AdminDashboard() {
           </div>
         </div>
       </div>
+
+      {totalOverdueComplaints > 0 && (
+        <div className={styles.overdueSection}>
+          <div className={styles.overdueTableHeader}>
+            <h2 className={styles.overdueTitle}>Overdue Complaints</h2>
+            <span className={styles.badgeRed}>Critical Priority Escalated</span>
+          </div>
+          <div className={styles.tableWrapper}>
+            <table className={styles.overdueTable}>
+              <thead>
+                <tr>
+                  <th className={styles.overdueTh}>Code</th>
+                  <th className={styles.overdueTh}>Student</th>
+                  <th className={styles.overdueTh}>Room</th>
+                  <th className={styles.overdueTh}>Category</th>
+                  <th className={styles.overdueTh}>Days Pending</th>
+                  <th className={styles.overdueTh}>Status</th>
+                  <th className={styles.overdueTh}>Priority</th>
+                </tr>
+              </thead>
+              <tbody>
+                {overdueComplaintsList.map((complaint) => (
+                  <tr key={complaint.id} className={styles.overdueTr}>
+                    <td className={`${styles.overdueTd} ${styles.codeCell}`}>{complaint.complaint_code}</td>
+                    <td className={styles.overdueTd} style={{ fontWeight: 600 }}>{complaint.student.name}</td>
+                    <td className={styles.overdueTd}>Room {complaint.student.room_number || "—"}</td>
+                    <td className={styles.overdueTd}>{complaint.category}</td>
+                    <td className={styles.overdueTd} style={{ color: "#ef4444", fontWeight: 700 }}>
+                      {getDaysPending(complaint.created_at)} Days
+                    </td>
+                    <td className={styles.overdueTd}>
+                      <span className={styles.badgeRed}>{getStatusLabel(complaint.status)}</span>
+                    </td>
+                    <td className={styles.overdueTd}>
+                      <span className={styles.badgeRed} style={{ background: "#ef4444", color: "white" }}>
+                        HIGH
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       <div className={styles.layoutSection}>
         {/* Left Card: Status Breakdown */}

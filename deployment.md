@@ -121,3 +121,23 @@ Before migrating to public deployment, verify that:
 1.  **SMS/Email Gateway Integration**: Hook up notifications to Twilio or SendGrid APIs to alert students immediately when the RC updates a complaint status.
 2.  **Advanced Analytics**: Expand the Admin Dashboard with resolution metrics (e.g. average time to close, issues per room, category counts).
 3.  **Calendar Scheduling**: Allow RCs to schedule inspection time slots so students can select a time for electricians or plumbers to enter their room.
+
+---
+
+## 7. Temporary LAN Deployment (Hostel Wi-Fi)
+
+To temporarily host this application on the hostel or college Wi-Fi so students can access it from their laptops or mobile phones without deploying to the public internet:
+
+### Host Scenarios
+1. **Using a Laptop**: Useful for temporary local demonstrations or tests in a block common area.
+2. **Using the RC Office Computer**: Ideal for running the system continuously on a low-spec block server PC.
+3. **Using Hostel Wi-Fi**: Both host PC and clients connect to the same local Wi-Fi router.
+
+### Steps to Run
+1. **Connect to Wi-Fi**: Connect the Host PC/Laptop to the Wi-Fi network.
+2. **Bind to 0.0.0.0**: Execute the dev or start script. Because the default script bindings have been updated, running `npm start` or `npm run dev` automatically listens on all network interfaces (`0.0.0.0`). If port 3000 is already in use, the server will fall back to an open port (e.g., 3001) automatically.
+3. **Get the Local LAN IP**:
+   - The active LAN IPv4 and runtime port are displayed dynamically in the server startup diagnostic banner.
+4. **Distribute the Address**: Share the LAN address: `http://<YOUR_IP>:<PORT>`. Admin users can log in and visit the `/lan` page to access the offline connection QR code.
+
+For detailed networking instructions, firewall configuration commands, and WSL VM setup, consult the [Firewall Guide](file:///c:/Users/acer/Downloads/project/Hostel/firewall.md).

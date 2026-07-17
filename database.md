@@ -44,9 +44,11 @@ erDiagram
         string student_id FK
         string title
         string description
-        string category "Electrical | Plumbing | Carpentry | Masonry | Housekeeping | Others"
+        string category "Electrical | Plumbing | Carpentry | Wi-Fi | Housekeeping | Others"
         string image_url "Nullable"
-        enum status "SUBMITTED | ACKNOWLEDGED | IN_PROGRESS | AWAITING_STUDENT_CONFIRMATION | AWAITING_RC_VERIFICATION | REOPENED | CLOSED"
+        enum status "SUBMITTED | ACKNOWLEDGED | AWAITING_STUDENT_CONFIRMATION | AWAITING_RC_VERIFICATION | REOPENED | CLOSED"
+        boolean overdue "Default false"
+        enum priority "NORMAL | HIGH"
         datetime created_at
         datetime updated_at
         datetime resolved_at "Nullable"
@@ -122,7 +124,9 @@ erDiagram
 
 ### Complaints Table (`complaints`)
 *   `complaint_code`: Unique constraint (`@unique`). Formatted as `MNT-[YEAR]-[6-DIGIT-SEQUENCE]` (e.g. `MNT-2026-000001`).
-*   `status`: Defaults to `SUBMITTED`.
+*   `status`: Defaults to `SUBMITTED`. Lifecycle statuses are exactly: `SUBMITTED`, `ACKNOWLEDGED`, `AWAITING_STUDENT_CONFIRMATION`, `AWAITING_RC_VERIFICATION`, `REOPENED`, `CLOSED`.
+*   `overdue`: Defaults to `false`. Flagged as `true` automatically via checker transaction if unresolved for more than 3 days.
+*   `priority`: Defaults to `NORMAL`. Escalated to `HIGH` automatically once a complaint becomes overdue.
 *   `resolved_at` / `closed_at`: Timestamp logs stored during work progression and official verification closure.
 
 ---
@@ -142,6 +146,8 @@ Indexes are configured on all columns evaluated in filters, sorts, search operat
     *   `@@index([status])`
     *   `@@index([category])`
     *   `@@index([created_at])`
+    *   `@@index([overdue])`
+    *   `@@index([priority])`
 *   **Complaint Updates Table**:
     *   `@@index([complaint_id])`
 *   **Notifications Table**:

@@ -38,3 +38,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "An internal server error occurred" }, { status: 500 });
   }
 }
+
+export async function GET(request: Request) {
+  try {
+    await clearSessionCookie();
+  } catch (err) {
+    console.error("Logout GET error:", err);
+  }
+  const { searchParams } = new URL(request.url);
+  const redirectTo = searchParams.get("redirect") || "/login";
+  return NextResponse.redirect(new URL(redirectTo, request.url));
+}

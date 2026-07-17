@@ -27,26 +27,49 @@ export default function NotificationDropdown({ role }: NotificationDropdownProps
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
 
+  const isSessionValidRef = useRef(true);
+
   // Fetch notifications from API
   const fetchNotifications = async () => {
+    if (!isSessionValidRef.current) return;
     try {
       const response = await fetch("/api/notifications");
+      if (response.status === 401) {
+        isSessionValidRef.current = false;
+        return;
+      }
       if (response.ok) {
         const data = await response.json();
         setNotifications(data.notifications || []);
         setUnreadCount(data.unreadCount || 0);
       }
     } catch (err) {
-      console.error("Error fetching notifications:", err);
+      // Silent catch to prevent console errors during server boot/rebuilds
     }
   };
 
   useEffect(() => {
+    // Fetch once on mount
     fetchNotifications();
 
-    // Check for updates every 20 seconds
-    const interval = setInterval(fetchNotifications, 20000);
-    return () => clearInterval(interval);
+    const interval = setInterval(() => {
+      if (document.visibilityState === "visible" && isSessionValidRef.current) {
+        fetchNotifications();
+      }
+    }, 30000); // Poll every 30 seconds
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible" && isSessionValidRef.current) {
+        fetchNotifications();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, []);
 
   // Close dropdown when clicking outside

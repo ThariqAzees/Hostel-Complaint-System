@@ -1,10 +1,15 @@
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth";
+import { cookies } from "next/headers";
 
 export default async function IndexPage() {
   const user = await getSessionUser();
 
   if (!user) {
+    const cookieStore = await cookies();
+    if (cookieStore.has("hostel_session")) {
+      redirect("/api/auth/logout");
+    }
     redirect("/login");
   }
 

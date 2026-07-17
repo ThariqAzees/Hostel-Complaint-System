@@ -78,7 +78,7 @@ This document provides a reference for all backend API endpoints, payload struct
 *   **Content-Type**: `multipart/form-data`
 *   **Form Parameters**:
     *   `title` (string, min 5 chars, required)
-    *   `category` (string, required: `Electrical`, `Plumbing`, `Carpentry`, `Masonry`, `Housekeeping`, `Others`)
+    *   `category` (string, required: `Electrical`, `Plumbing`, `Carpentry`, `Wi-Fi`, `Housekeeping`, `Others`)
     *   `description` (string, min 15 chars, required)
     *   `image` (File, max 5MB, optional: JPEG/PNG/WebP format)
 *   **Responses**:
@@ -96,8 +96,8 @@ This document provides a reference for all backend API endpoints, payload struct
 *   **Request Body**:
     ```json
     {
-      "action": "STUDENT_CONFIRM_FIXED" | "STUDENT_REJECT_FIXED",
-      "remarks": "Feedback comments (optional)"
+      "action": "STUDENT_MARK_COMPLETED" | "STUDENT_CONFIRM_FIXED" | "STUDENT_REOPEN",
+      "remarks": "Feedback comments (required if action is STUDENT_REOPEN)"
     }
     ```
 *   **Responses**:
@@ -105,8 +105,7 @@ This document provides a reference for all backend API endpoints, payload struct
         ```json
         { "success": true }
         ```
-    *   `400 Bad Request`: Unauthorized transition state.
-    *   `403 Forbidden`: Ownership mismatch (student does not own complaint).
+    *   `400 Bad Request`: Invalid transition, or student does not own complaint, or reopening requested before 2 days have elapsed from creation.
 
 ---
 
@@ -117,8 +116,8 @@ This document provides a reference for all backend API endpoints, payload struct
 *   **Request Body**:
     ```json
     {
-      "action": "ACKNOWLEDGE" | "START_WORK" | "REQUEST_CONFIRMATION" | "RC_VERIFY_CLOSE",
-      "remarks": "Transition notes or resolution remarks (optional)"
+      "action": "ACKNOWLEDGE" | "RC_VERIFY_CLOSE",
+      "remarks": "Transition notes or closing remarks (optional)"
     }
     ```
 *   **Responses**:
@@ -126,7 +125,7 @@ This document provides a reference for all backend API endpoints, payload struct
         ```json
         { "success": true }
         ```
-    *   `400 Bad Request`: Transition mismatch or missing parameters.
+    *   `400 Bad Request`: Transition mismatch, or unauthorized role action.
 
 ---
 
@@ -176,7 +175,7 @@ This document provides a reference for all backend API endpoints, payload struct
 *   **Form Parameters**:
     *   `file` (File, binary SheetJS Excel file: `.xlsx`, required)
 *   **Responses**:
-    *   `200 OK`: Parses sheet and populates `StudentImport` and `ImportRecord` staging tables.
+    *   `200 OK`: Parses sheet and populates staging tables.
         ```json
         {
           "success": true,
@@ -196,7 +195,7 @@ This document provides a reference for all backend API endpoints, payload struct
     }
     ```
 *   **Responses**:
-    *   `200 OK`: Transactionally writes all VALID records into active users table and logs audit trace.
+    *   `200 OK`: Staged user validation confirmation and batch staging creation.
         ```json
         { "success": true, "createdCount": 10 }
         ```

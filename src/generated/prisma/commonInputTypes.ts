@@ -199,6 +199,13 @@ export type EnumComplaintStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumComplaintStatusFilter<$PrismaModel> | $Enums.ComplaintStatus
 }
 
+export type EnumComplaintPriorityFilter<$PrismaModel = never> = {
+  equals?: $Enums.ComplaintPriority | Prisma.EnumComplaintPriorityFieldRefInput<$PrismaModel>
+  in?: $Enums.ComplaintPriority[] | Prisma.ListEnumComplaintPriorityFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ComplaintPriority[] | Prisma.ListEnumComplaintPriorityFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumComplaintPriorityFilter<$PrismaModel> | $Enums.ComplaintPriority
+}
+
 export type EnumComplaintStatusWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.ComplaintStatus | Prisma.EnumComplaintStatusFieldRefInput<$PrismaModel>
   in?: $Enums.ComplaintStatus[] | Prisma.ListEnumComplaintStatusFieldRefInput<$PrismaModel>
@@ -207,6 +214,16 @@ export type EnumComplaintStatusWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumComplaintStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumComplaintStatusFilter<$PrismaModel>
+}
+
+export type EnumComplaintPriorityWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ComplaintPriority | Prisma.EnumComplaintPriorityFieldRefInput<$PrismaModel>
+  in?: $Enums.ComplaintPriority[] | Prisma.ListEnumComplaintPriorityFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ComplaintPriority[] | Prisma.ListEnumComplaintPriorityFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumComplaintPriorityWithAggregatesFilter<$PrismaModel> | $Enums.ComplaintPriority
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumComplaintPriorityFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumComplaintPriorityFilter<$PrismaModel>
 }
 
 export type NestedStringFilter<$PrismaModel = never> = {
@@ -407,6 +424,13 @@ export type NestedEnumComplaintStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumComplaintStatusFilter<$PrismaModel> | $Enums.ComplaintStatus
 }
 
+export type NestedEnumComplaintPriorityFilter<$PrismaModel = never> = {
+  equals?: $Enums.ComplaintPriority | Prisma.EnumComplaintPriorityFieldRefInput<$PrismaModel>
+  in?: $Enums.ComplaintPriority[] | Prisma.ListEnumComplaintPriorityFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ComplaintPriority[] | Prisma.ListEnumComplaintPriorityFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumComplaintPriorityFilter<$PrismaModel> | $Enums.ComplaintPriority
+}
+
 export type NestedEnumComplaintStatusWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.ComplaintStatus | Prisma.EnumComplaintStatusFieldRefInput<$PrismaModel>
   in?: $Enums.ComplaintStatus[] | Prisma.ListEnumComplaintStatusFieldRefInput<$PrismaModel>
@@ -415,6 +439,16 @@ export type NestedEnumComplaintStatusWithAggregatesFilter<$PrismaModel = never> 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumComplaintStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumComplaintStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumComplaintPriorityWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ComplaintPriority | Prisma.EnumComplaintPriorityFieldRefInput<$PrismaModel>
+  in?: $Enums.ComplaintPriority[] | Prisma.ListEnumComplaintPriorityFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ComplaintPriority[] | Prisma.ListEnumComplaintPriorityFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumComplaintPriorityWithAggregatesFilter<$PrismaModel> | $Enums.ComplaintPriority
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumComplaintPriorityFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumComplaintPriorityFilter<$PrismaModel>
 }
 
 

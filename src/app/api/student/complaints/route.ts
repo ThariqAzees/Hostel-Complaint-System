@@ -35,6 +35,19 @@ export async function POST(request: Request) {
     const trimmedDescription = description.trim();
     const trimmedCategory = category.trim();
 
+    const VALID_CATEGORIES = [
+      "Electrical",
+      "Plumbing",
+      "Carpentry",
+      "Wi-Fi",
+      "Housekeeping",
+      "Others"
+    ];
+
+    if (!VALID_CATEGORIES.includes(trimmedCategory)) {
+      return NextResponse.json({ error: "Invalid complaint category selected." }, { status: 400 });
+    }
+
     if (trimmedTitle.length < 5) {
       return NextResponse.json({ error: "Title must be at least 5 characters long." }, { status: 400 });
     }

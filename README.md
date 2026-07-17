@@ -128,22 +128,22 @@ The database seed script generates the following credentials:
 
 ## 7. Complaint Lifecycle Workflow
 
-All status transitions occur transactionally inside the central state machine. 
+All status transitions occur transactionally inside the central state machine.
 
 ### Transition Matrix
 
 ```mermaid
 stateDiagram-v2
     [*] --> SUBMITTED : Student submits complaint
-    SUBMITTED --> ACKNOWLEDGED : RC acknowledges
-    ACKNOWLEDGED --> IN_PROGRESS : RC starts work
-    IN_PROGRESS --> AWAITING_STUDENT_CONFIRMATION : RC requests confirmation
+    SUBMITTED --> ACKNOWLEDGED : RC Acknowledges
+    REOPENED --> ACKNOWLEDGED : RC Acknowledges
     
-    AWAITING_STUDENT_CONFIRMATION --> REOPENED : Student marks "Not Fixed"
-    AWAITING_STUDENT_CONFIRMATION --> AWAITING_RC_VERIFICATION : Student marks "Fixed"
+    ACKNOWLEDGED --> AWAITING_STUDENT_CONFIRMATION : Student marks Maintenance Completed
     
-    REOPENED --> IN_PROGRESS : RC starts work again
-    AWAITING_RC_VERIFICATION --> CLOSED : RC verifies and closes
+    AWAITING_STUDENT_CONFIRMATION --> REOPENED : Student Reopens (available after 2 days)
+    AWAITING_STUDENT_CONFIRMATION --> AWAITING_RC_VERIFICATION : Student Confirms Fixed
+    
+    AWAITING_RC_VERIFICATION --> CLOSED : RC Verifies and Closes
     CLOSED --> [*]
 ```
 
@@ -167,10 +167,10 @@ All mutating endpoints require CSRF headers matching the application's origin.
 
 ### Student API
 *   `POST /api/student/complaints`: Submits new complaint (supports `multipart/form-data` with optional JPEG/PNG/WebP uploads).
-*   `POST /api/student/complaints/[id]/transition`: Transitions complaint (allows `STUDENT_CONFIRM_FIXED` or `STUDENT_REJECT_FIXED`).
+*   `POST /api/student/complaints/[id]/transition`: Transitions complaint (allows `STUDENT_MARK_COMPLETED`, `STUDENT_CONFIRM_FIXED`, and `STUDENT_REOPEN`).
 
 ### RC API
-*   `POST /api/rc/complaints/[id]/transition`: Transitions complaint (allows `ACKNOWLEDGE`, `START_WORK`, `REQUEST_CONFIRMATION`, and `RC_VERIFY_CLOSE`).
+*   `POST /api/rc/complaints/[id]/transition`: Transitions complaint (allows `ACKNOWLEDGE` and `RC_VERIFY_CLOSE`).
 
 ### Admin API
 *   `GET /api/admin/metrics`: Summary system KPIs (Total users, Active complaints, Closed complaints, Excel staging counts).
@@ -192,3 +192,41 @@ All mutating endpoints require CSRF headers matching the application's origin.
 *   **Session Revocation**: Password changes or administrative resets increment `token_version` in the database, instantly invalidating old cookies.
 *   **Authorization Guard**: The global `middleware.ts` runs prior to page loads or API routing, checking roles and deactivation status.
 *   **Directory Access Control**: Prisma queries automatically filter lists based on session context, preventing students from querying other rooms' complaints.
+
+---
+
+## 10. Running on Hostel Wi-Fi (LAN Hosting)
+
+To temporarily host this application on your local Wi-Fi router so that any student connected to the same network can access it from their mobile phone or laptop:
+
+### Step 1: Install Dependencies
+```bash
+npm install
+```
+
+### Step 2: Build the Application
+Compile code and build typescript static outputs:
+```bash
+npm run build
+```
+
+### Step 3: Start Server on All Interfaces
+Binds the Next.js server to interface `0.0.0.0` (all network cards):
+```bash
+npm start
+```
+*Note: In development mode, run `npm run dev` (which is pre-configured to listen on all interfaces). If port 3000 is occupied, Next.js will automatically select an alternative port (e.g., 3001), which will be shown in the console.*
+
+### Step 4: Find Local IP Address
+The system automatically displays the correct connection IP in the server logs. Alternatively, check:
+* **Windows**: `ipconfig` (Look for the Wireless LAN adapter Wi-Fi IPv4 address).
+* **WSL 2 / Linux**: The active IP is displayed in the startup diagnostic console banner.
+
+### Step 5: Open LAN Web Page
+Open the system in any device browser connected to the same network:
+```text
+http://<YOUR_HOST_IP>:<PORT>
+```
+*(e.g., http://192.168.137.102:3000)*
+
+Administrators can navigate to `/lan` after logging in to view live connection statuses and print/scan the offline QR code.

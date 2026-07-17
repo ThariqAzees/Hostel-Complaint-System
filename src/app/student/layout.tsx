@@ -5,6 +5,8 @@ import StudentHeader from "./header";
 import styles from "./student-layout.module.css";
 import { APP_CONFIG } from "@/config/app-config";
 
+import { cookies } from "next/headers";
+
 interface StudentLayoutProps {
   children: React.ReactNode;
 }
@@ -14,6 +16,10 @@ export default async function StudentLayout({ children }: StudentLayoutProps) {
 
   // Redirect if session is invalid or user is not a student
   if (!user || user.role !== "STUDENT") {
+    const cookieStore = await cookies();
+    if (cookieStore.has("hostel_session")) {
+      redirect("/api/auth/logout");
+    }
     redirect("/login");
   }
 

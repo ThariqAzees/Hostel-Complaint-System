@@ -83,7 +83,7 @@ export default async function StudentComplaintDetailsPage({ params }: ComplaintD
     });
   };
 
-  const isAwaitingConfirmation = complaint.status === "AWAITING_STUDENT_CONFIRMATION";
+  const isAwaitingConfirmation = complaint.status === "AWAITING_STUDENT_CONFIRMATION" || complaint.status === "ACKNOWLEDGED";
 
   return (
     <div className={`${styles.container} animate-fade`}>
@@ -151,7 +151,11 @@ export default async function StudentComplaintDetailsPage({ params }: ComplaintD
 
       {/* Confirmation Actions for Students */}
       {isAwaitingConfirmation && (
-        <ConfirmationPanel complaintId={complaint.id} />
+        <ConfirmationPanel
+          complaintId={complaint.id}
+          status={complaint.status}
+          createdAt={complaint.created_at.toISOString()}
+        />
       )}
 
       {/* Complaint Timeline Updates */}

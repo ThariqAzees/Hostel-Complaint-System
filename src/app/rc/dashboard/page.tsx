@@ -4,6 +4,8 @@ import ClickableRow from "@/components/clickable-row";
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { checkAndUpdateOverdueComplaints } from "@/lib/state-machine";
+import { cookies } from "next/headers";
 import styles from "./dashboard.module.css";
 import RcFilter from "./rc-filter";
 import { ChevronLeft, ChevronRight, FileText, ClipboardList } from "lucide-react";
@@ -22,8 +24,15 @@ interface RcDashboardPageProps {
 export default async function RcDashboardPage({ searchParams }: RcDashboardPageProps) {
   const rcUser = await getSessionUser();
   if (!rcUser || rcUser.role !== "RC") {
+    const cookieStore = await cookies();
+    if (cookieStore.has("hostel_session")) {
+      redirect("/api/auth/logout");
+    }
     redirect("/login");
   }
+
+  // Trigger overdue sweep on load
+  await checkAndUpdateOverdueComplaints();
 
   // Await async search parameters (Next.js 15+)
   const resolvedSearchParams = await searchParams;
@@ -59,18 +68,19 @@ export default async function RcDashboardPage({ searchParams }: RcDashboardPageP
     totalCount,
     submittedCount,
     acknowledgedCount,
-    inProgressCount,
+    overdueCount,
     awaitingStudentCount,
     awaitingRcCount,
     reopenedCount,
     closedCount,
     complaints,
     filteredCount,
+    overdueComplaintsList,
   ] = await prisma.$transaction([
     prisma.complaint.count(),
     prisma.complaint.count({ where: { status: "SUBMITTED" } }),
     prisma.complaint.count({ where: { status: "ACKNOWLEDGED" } }),
-    prisma.complaint.count({ where: { status: "IN_PROGRESS" } }),
+    prisma.complaint.count({ where: { overdue: true, status: { not: "CLOSED" } } }),
     prisma.complaint.count({ where: { status: "AWAITING_STUDENT_CONFIRMATION" } }),
     prisma.complaint.count({ where: { status: "AWAITING_RC_VERIFICATION" } }),
     prisma.complaint.count({ where: { status: "REOPENED" } }),
@@ -85,11 +95,23 @@ export default async function RcDashboardPage({ searchParams }: RcDashboardPageP
           },
         },
       },
-      orderBy: { created_at: "desc" },
+      orderBy: [
+        { overdue: "desc" },
+        { created_at: "desc" },
+      ],
       skip,
       take: pageSize,
     }),
     prisma.complaint.count({ where }),
+    prisma.complaint.findMany({
+      where: { overdue: true, status: { not: "CLOSED" } },
+      include: {
+        student: {
+          select: { name: true, room_number: true },
+        },
+      },
+      orderBy: { created_at: "asc" },
+    }),
   ]);
 
   const totalPages = Math.ceil(filteredCount / pageSize);
@@ -160,9 +182,9 @@ export default async function RcDashboardPage({ searchParams }: RcDashboardPageP
           <span className={styles.statTitle}>Acknowledged</span>
           <span className={styles.statValue}>{acknowledgedCount}</span>
         </div>
-        <div className={styles.statCard} style={{ borderLeft: "3px solid #d97706" }}>
-          <span className={styles.statTitle}>In Progress</span>
-          <span className={styles.statValue}>{inProgressCount}</span>
+        <div className={styles.statCard} style={{ borderLeft: "3px solid #ef4444" }}>
+          <span className={styles.statTitle}>Overdue</span>
+          <span className={styles.statValue}>{overdueCount}</span>
         </div>
         <div className={styles.statCard} style={{ borderLeft: "3px solid #0369a1" }}>
           <span className={styles.statTitle}>Awaiting Student</span>
@@ -181,6 +203,57 @@ export default async function RcDashboardPage({ searchParams }: RcDashboardPageP
           <span className={styles.statValue}>{closedCount}</span>
         </div>
       </div>
+
+      {overdueCount > 0 && (
+        <div style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", borderRadius: "var(--radius-md)", padding: "24px 28px", marginBottom: "32px", boxShadow: "var(--shadow-sm)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+            <h2 style={{ fontFamily: "var(--font-display)", fontSize: "1.15rem", fontWeight: 700, color: "var(--foreground)" }}>Overdue Complaints</h2>
+            <span style={{ display: "inline-flex", padding: "4px 8px", borderRadius: "4px", fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase", background: "rgba(239, 68, 68, 0.15)", color: "#b91c1c" }}>Action Required</span>
+          </div>
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
+              <thead>
+                <tr>
+                  <th className={styles.th}>Code</th>
+                  <th className={styles.th}>Student Name</th>
+                  <th className={styles.th}>Room</th>
+                  <th className={styles.th}>Category</th>
+                  <th className={styles.th}>Days Pending</th>
+                  <th className={styles.th}>Current Status</th>
+                  <th className={styles.th}>Priority</th>
+                </tr>
+              </thead>
+              <tbody>
+                {overdueComplaintsList.map((complaint) => (
+                  <ClickableRow
+                    key={complaint.id}
+                    href={`/rc/complaints/${complaint.id}`}
+                    className={styles.tr}
+                  >
+                    <td className={`${styles.td} ${styles.codeCell}`}>{complaint.complaint_code}</td>
+                    <td className={styles.td} style={{ fontWeight: 600 }}>{complaint.student.name}</td>
+                    <td className={styles.td}>Room {complaint.student.room_number || "—"}</td>
+                    <td className={styles.td}>{complaint.category}</td>
+                    <td className={styles.td} style={{ color: "#ef4444", fontWeight: 700 }}>
+                      {Math.floor((Date.now() - new Date(complaint.created_at).getTime()) / (1000 * 60 * 60 * 24))} Days
+                    </td>
+                    <td className={styles.td}>
+                      <span className={`${styles.badge} ${getStatusBadgeClass(complaint.status)}`}>
+                        {getStatusLabel(complaint.status)}
+                      </span>
+                    </td>
+                    <td className={styles.td}>
+                      <span style={{ display: "inline-flex", padding: "4px 8px", borderRadius: "4px", fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase", background: "#ef4444", color: "white" }}>
+                        HIGH
+                      </span>
+                    </td>
+                  </ClickableRow>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* Filters Area */}
       <Suspense fallback={<div>Loading filters...</div>}>
@@ -222,9 +295,16 @@ export default async function RcDashboardPage({ searchParams }: RcDashboardPageP
                     <td className={`${styles.td} ${styles.titleCell}`}>{complaint.title}</td>
                     <td className={styles.td}>{complaint.category}</td>
                     <td className={styles.td}>
-                      <span className={`${styles.badge} ${getStatusBadgeClass(complaint.status)}`}>
-                        {getStatusLabel(complaint.status)}
-                      </span>
+                      <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+                        <span className={`${styles.badge} ${getStatusBadgeClass(complaint.status)}`}>
+                          {getStatusLabel(complaint.status)}
+                        </span>
+                        {complaint.overdue && (
+                          <span style={{ background: "#fee2e2", color: "#b91c1c", fontWeight: 700, padding: "4px 8px", borderRadius: "4px", fontSize: "0.7rem", textTransform: "uppercase" }}>
+                            OVERDUE
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className={styles.td}>{formatDate(complaint.created_at)}</td>
                   </ClickableRow>
