@@ -116,8 +116,6 @@ The database seed script generates the following credentials:
 
 | Role      | Username / Registration No. | Password / Temp Password | Account Details                   |
 | :-------- | :-------------------------- | :----------------------- | :-------------------------------- |
-| **ADMIN** | `admin@ech.com`             | `admin_password`         | System Administrator              |
-| **RC**    | `rc@ech.com`                | `rc_password`            | Residential Counselor             |
 | **STUDENT**| `2023105001`                | `150305`                 | Student 1 (DOB: 15-03-2005, Rm 101)|
 | **STUDENT**| `2023105002`                | `220704`                 | Student 2 (DOB: 22-07-2004, Rm 102)|
 | **STUDENT**| `2023105003`                | `051205`                 | Student 3 (DOB: 05-12-2005, Rm 103)|
