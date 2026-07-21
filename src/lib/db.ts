@@ -15,7 +15,11 @@ const getPrismaClient = (): PrismaClient => {
     throw new Error("DATABASE_URL is not defined in environment variables.");
   }
 
-  const pool = new Pool({ connectionString });
+  const isSsl = connectionString.includes("sslmode=require") || connectionString.includes("sslmode=prefer") || connectionString.includes("ssl=true");
+  const pool = new Pool({ 
+    connectionString,
+    ssl: isSsl ? { rejectUnauthorized: false } : undefined
+  });
   const adapter = new PrismaPg(pool);
   const client = new PrismaClient({ adapter });
 
