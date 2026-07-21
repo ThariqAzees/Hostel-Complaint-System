@@ -43,6 +43,7 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
       id-token: write
+      contents: read
 
     steps:
       - name: Download artifact from build job
@@ -56,9 +57,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_C57BFBE5AFE34BBAA2A0FEF0CE77EDBB }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_61DED073FFBF4FF9A91D6E50AF6E136D }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_D948DA99EA08492CAE91CDE4FFBDD0A2 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_B80BA3FFA69D4DD79E86102FC3436A9B }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_21E690965DAB4A548C732DDE6ECF3BB8 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_EA6A7C790FCD4C6287F63AD375E4706A }}
 
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
