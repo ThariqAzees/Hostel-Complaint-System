@@ -36,29 +36,33 @@ function getRuntimePort(): number {
 
 function getWindowsHostIP(): string {
   try {
-    const output = execSync("ipconfig.exe").toString();
-    const lines = output.split(/\r?\n/);
-    let inActiveAdapter = false;
-    for (const line of lines) {
-      const trimmed = line.trim();
-      if (trimmed.endsWith(":") && (
-        trimmed.toLowerCase().includes("wireless lan adapter") ||
-        trimmed.toLowerCase().includes("ethernet adapter ethernet") ||
-        trimmed.toLowerCase().includes("ethernet adapter local area connection")
-      )) {
-        if (!trimmed.toLowerCase().includes("wsl") && !trimmed.toLowerCase().includes("virtual")) {
-          inActiveAdapter = true;
-        } else {
-          inActiveAdapter = false;
+    const isWindows = process.platform === "win32";
+    const isWsl = process.platform === "linux" && fs.existsSync("/proc/version") && fs.readFileSync("/proc/version", "utf8").toLowerCase().includes("microsoft");
+    if (isWindows || isWsl) {
+      const output = execSync("ipconfig.exe", { stdio: ["ignore", "pipe", "ignore"] }).toString();
+      const lines = output.split(/\r?\n/);
+      let inActiveAdapter = false;
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (trimmed.endsWith(":") && (
+          trimmed.toLowerCase().includes("wireless lan adapter") ||
+          trimmed.toLowerCase().includes("ethernet adapter ethernet") ||
+          trimmed.toLowerCase().includes("ethernet adapter local area connection")
+        )) {
+          if (!trimmed.toLowerCase().includes("wsl") && !trimmed.toLowerCase().includes("virtual")) {
+            inActiveAdapter = true;
+          } else {
+            inActiveAdapter = false;
+          }
         }
-      }
-      
-      if (inActiveAdapter && trimmed.toLowerCase().includes("ipv4 address")) {
-        const parts = trimmed.split(":");
-        if (parts[1]) {
-          const ip = parts[1].replace("(Preferred)", "").trim();
-          if (ip && !ip.startsWith("127.")) {
-            return ip;
+        
+        if (inActiveAdapter && trimmed.toLowerCase().includes("ipv4 address")) {
+          const parts = trimmed.split(":");
+          if (parts[1]) {
+            const ip = parts[1].replace("(Preferred)", "").trim();
+            if (ip && !ip.startsWith("127.")) {
+              return ip;
+            }
           }
         }
       }
@@ -69,22 +73,25 @@ function getWindowsHostIP(): string {
 
 function getWslIP(): string {
   try {
-    const output = execSync("ipconfig.exe").toString();
-    const lines = output.split(/\r?\n/);
-    let inWslSection = false;
-    for (const line of lines) {
-      const trimmed = line.trim();
-      if (trimmed.endsWith(":") && trimmed.toLowerCase().includes("vethernet (wsl")) {
-        inWslSection = true;
-      } else if (trimmed.endsWith(":") && !trimmed.toLowerCase().includes("vethernet (wsl")) {
-        inWslSection = false;
-      }
-      
-      if (inWslSection && trimmed.toLowerCase().includes("ipv4 address")) {
-        const parts = trimmed.split(":");
-        if (parts[1]) {
-          const ip = parts[1].replace("(Preferred)", "").trim();
-          if (ip) return ip;
+    const isWsl = process.platform === "linux" && fs.existsSync("/proc/version") && fs.readFileSync("/proc/version", "utf8").toLowerCase().includes("microsoft");
+    if (isWsl) {
+      const output = execSync("ipconfig.exe", { stdio: ["ignore", "pipe", "ignore"] }).toString();
+      const lines = output.split(/\r?\n/);
+      let inWslSection = false;
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (trimmed.endsWith(":") && trimmed.toLowerCase().includes("vethernet (wsl")) {
+          inWslSection = true;
+        } else if (trimmed.endsWith(":") && !trimmed.toLowerCase().includes("vethernet (wsl")) {
+          inWslSection = false;
+        }
+        
+        if (inWslSection && trimmed.toLowerCase().includes("ipv4 address")) {
+          const parts = trimmed.split(":");
+          if (parts[1]) {
+            const ip = parts[1].replace("(Preferred)", "").trim();
+            if (ip) return ip;
+          }
         }
       }
     }
