@@ -72,6 +72,7 @@ function getAllowedOrigins(): string[] {
 }
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   allowedDevOrigins: getAllowedOrigins(),
   devIndicators: false,
 };

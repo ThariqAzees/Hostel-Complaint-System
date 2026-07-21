@@ -140,7 +140,7 @@ export default async function StudentComplaintDetailsPage({ params }: ComplaintD
             <h2 className={styles.descriptionTitle}>Attached Photo</h2>
             <div className={styles.imageContainer}>
               <img
-                src={complaint.image_url}
+                src={`/api/complaints/${complaint.id}/image`}
                 alt="Complaint Attachment"
                 className={styles.complaintImage}
               />

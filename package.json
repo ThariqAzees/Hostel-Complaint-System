@@ -9,6 +9,8 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@azure/identity": "^4.13.1",
+    "@azure/storage-blob": "^12.33.0",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "bcryptjs": "^3.0.3",
@@ -23,7 +25,6 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
-    "@esbuild/linux-x64": "^0.28.1",
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20",

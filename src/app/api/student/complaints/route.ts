@@ -3,8 +3,7 @@ export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getSessionUser, validateCSRF } from "@/lib/auth";
-import fs from "fs";
-import path from "path";
+import { uploadComplaintImage, deleteComplaintImage } from "@/lib/storage";
 
 // Supported image MIME types
 const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -20,6 +19,8 @@ export async function POST(request: Request) {
   if (!studentUser || studentUser.role !== "STUDENT") {
     return NextResponse.json({ error: "Unauthorized. Student access required." }, { status: 401 });
   }
+
+  let imageUrl: string | null = null;
 
   try {
     const formData = await request.formData();
@@ -57,36 +58,18 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Description must be at least 15 characters long." }, { status: 400 });
     }
 
-    let imageUrl: string | null = null;
-
-    // Validate and save image if present
+    // Validate and upload image via storage abstraction
     if (imageFile && imageFile.size > 0) {
-      // Validate file size
-      if (imageFile.size > MAX_FILE_SIZE) {
-        return NextResponse.json({ error: "Image size exceeds the 5MB limit." }, { status: 400 });
-      }
-
-      // Validate MIME type
-      if (!ALLOWED_MIME_TYPES.includes(imageFile.type)) {
-        return NextResponse.json({ error: "Unsupported image format. Allowed formats: JPEG, PNG, WebP." }, { status: 400 });
-      }
-
-      // Read image array buffer
       const bytes = await imageFile.arrayBuffer();
       const buffer = Buffer.from(bytes);
-
-      // Resolve and create storage directory
-      const uploadDir = path.join(process.cwd(), "public", "uploads", "complaints");
-      fs.mkdirSync(uploadDir, { recursive: true });
-
-      // Generate secure unique filename
-      const ext = imageFile.type.split("/")[1];
+      const ext = imageFile.type.split("/")[1] || "jpeg";
       const secureFileName = `complaint-${crypto.randomUUID()}.${ext}`;
-      const filePath = path.join(uploadDir, secureFileName);
 
-      // Write file locally
-      await fs.promises.writeFile(filePath, buffer);
-      imageUrl = `/uploads/complaints/${secureFileName}`;
+      try {
+        imageUrl = await uploadComplaintImage(buffer, secureFileName, imageFile.type);
+      } catch (uploadErr: any) {
+        return NextResponse.json({ error: uploadErr.message || "Failed to upload image." }, { status: 400 });
+      }
     }
 
     const currentYear = new Date().getFullYear();
@@ -186,6 +169,16 @@ export async function POST(request: Request) {
     });
   } catch (err) {
     console.error("Submit complaint error:", err);
+
+    // Compensating Cleanup: Delete uploaded blob if database transaction failed
+    if (imageUrl) {
+      try {
+        await deleteComplaintImage(imageUrl);
+      } catch (cleanupErr) {
+        console.error("Compensating cleanup error while deleting orphaned blob:", cleanupErr);
+      }
+    }
+
     return NextResponse.json({ error: "An internal server error occurred" }, { status: 500 });
   }
 }
