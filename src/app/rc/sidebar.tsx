@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "./rc-layout.module.css";
-import { LayoutDashboard, Bell, LogOut, Menu, X } from "lucide-react";
+import { LayoutDashboard, Bell, LogOut, Menu, X, KeyRound } from "lucide-react";
 import { APP_CONFIG } from "@/config/app-config";
 import NotificationDropdown from "@/components/notification-dropdown";
 
@@ -37,6 +37,7 @@ export default function RcSidebar() {
   const navItems = [
     { name: "Dashboard", href: "/rc/dashboard", icon: LayoutDashboard },
     { name: "Notifications", href: "/rc/notifications", icon: Bell },
+    { name: "Change Password", href: "/change-password", icon: KeyRound },
   ];
 
   const toggleSidebar = () => setIsOpen(!isOpen);

@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "./admin-layout.module.css";
-import { LayoutDashboard, Users, AlertCircle, ClipboardList, LogOut } from "lucide-react";
+import { LayoutDashboard, Users, AlertCircle, ClipboardList, LogOut, KeyRound } from "lucide-react";
 
 interface SidebarProps {
   user: {
@@ -53,6 +53,7 @@ export default function Sidebar({ user }: SidebarProps) {
     { name: "Students", href: "/admin/students", icon: Users },
     { name: "Complaints Queue", href: "/admin/complaints", icon: AlertCircle },
     { name: "Audit Logs", href: "/admin/audit-logs", icon: ClipboardList },
+    { name: "Change Password", href: "/change-password", icon: KeyRound },
   ];
 
   return (

@@ -20,6 +20,22 @@ export default function ChangePasswordPage() {
     special: /[^A-Za-z0-9]/.test(newPassword),
   };
 
+  const [mustChangePassword, setMustChangePassword] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((res) => {
+        if (res.ok) return res.json();
+        throw new Error("Failed to load user status");
+      })
+      .then((data) => {
+        setMustChangePassword(!!data.mustChangePassword);
+      })
+      .catch((err) => {
+        console.error("Error fetching user status:", err);
+      });
+  }, []);
+
   const getStrengthScore = () => {
     let score = 0;
     if (rules.length) score += 20;
@@ -84,9 +100,13 @@ export default function ChangePasswordPage() {
           <div style={{ display: "inline-flex", padding: "12px", background: "var(--primary-light)", borderRadius: "50%", marginBottom: "16px", color: "var(--primary)" }}>
             <KeyRound size={28} />
           </div>
-          <h1 className={styles.title}>Secure Your Account</h1>
+          <h1 className={styles.title}>
+            {mustChangePassword ? "Secure Your Account" : "Change Password"}
+          </h1>
           <p className={styles.subtitle}>
-            This is your first login. You must change your temporary password to access the portal.
+            {mustChangePassword 
+              ? "This is your first login. You must change your temporary password to access the portal." 
+              : "Update your account password to keep your account secure."}
           </p>
         </div>
 
@@ -193,6 +213,30 @@ export default function ChangePasswordPage() {
               "Update Password"
             )}
           </button>
+
+          {!mustChangePassword && (
+            <button
+              type="button"
+              onClick={() => window.location.href = "/"}
+              style={{
+                display: "block",
+                width: "100%",
+                background: "transparent",
+                border: "1px solid var(--border-color, #e2e8f0)",
+                color: "var(--text-secondary, #64748b)",
+                marginTop: "12px",
+                padding: "10px 16px",
+                borderRadius: "var(--radius-md, 8px)",
+                cursor: "pointer",
+                fontWeight: "500",
+                fontSize: "14px",
+                textAlign: "center",
+                transition: "all 0.2s"
+              }}
+            >
+              Cancel and Return
+            </button>
+          )}
         </form>
       </div>
     </div>

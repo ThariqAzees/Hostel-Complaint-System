@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "./student-layout.module.css";
-import { LayoutDashboard, PlusCircle, LogOut } from "lucide-react";
+import { LayoutDashboard, PlusCircle, LogOut, KeyRound } from "lucide-react";
 import { APP_CONFIG } from "@/config/app-config";
 import NotificationDropdown from "@/components/notification-dropdown";
 
@@ -36,6 +36,7 @@ export default function StudentHeader() {
   const navItems = [
     { name: "Dashboard", href: "/student/dashboard", icon: LayoutDashboard },
     { name: "Raise Complaint", href: "/student/complaints/new", icon: PlusCircle },
+    { name: "Change Password", href: "/change-password", icon: KeyRound },
   ];
 
   return (
