@@ -7,6 +7,8 @@ import ChangePasswordForm from "./change-password-form";
 export const dynamic = "force-dynamic";
 
 export default async function ChangePasswordPage() {
+  let mustChangePassword = false;
+  
   try {
     const user = await getSessionUser();
 
@@ -15,13 +17,15 @@ export default async function ChangePasswordPage() {
       redirect("/login");
     }
 
-    return <ChangePasswordForm mustChangePassword={user.must_change_password} />;
-  } catch (err: any) {
+    mustChangePassword = user.must_change_password;
+  } catch (err: unknown) {
     if (isRedirectError(err)) {
       throw err;
     }
     
-    console.error("CRASH IN SERVER RENDER ChangePasswordPage:", err.stack || err);
+    console.error("CRASH IN SERVER RENDER ChangePasswordPage:", err);
     throw err;
   }
+
+  return <ChangePasswordForm mustChangePassword={mustChangePassword} />;
 }

@@ -16,16 +16,35 @@ const getPrismaClient = (): PrismaClient => {
   }
 
   const isSsl = connectionString.includes("sslmode=require") || connectionString.includes("sslmode=prefer") || connectionString.includes("ssl=true");
+  
+  const poolMax = process.env.DATABASE_POOL_MAX ? parseInt(process.env.DATABASE_POOL_MAX, 10) : 5;
+  const poolIdleTimeout = process.env.DATABASE_POOL_IDLE_TIMEOUT ? parseInt(process.env.DATABASE_POOL_IDLE_TIMEOUT, 10) : 10000;
+  const poolConnTimeout = process.env.DATABASE_POOL_CONN_TIMEOUT ? parseInt(process.env.DATABASE_POOL_CONN_TIMEOUT, 10) : 5000;
+
   const pool = new Pool({ 
     connectionString,
-    ssl: isSsl ? { rejectUnauthorized: false } : undefined
+    ssl: isSsl ? { rejectUnauthorized: false } : undefined,
+    max: poolMax,
+    idleTimeoutMillis: poolIdleTimeout,
+    connectionTimeoutMillis: poolConnTimeout
   });
+
+  const isDebug = process.env.DEBUG === "true" || process.env.NODE_ENV !== "production";
+  if (isDebug) {
+    pool.on("connect", () => {
+      console.log(`[DB Pool] Connection established. Total: ${pool.totalCount}`);
+    });
+    pool.on("error", (err) => {
+      console.error("[DB Pool] Idle client error:", err.message);
+    });
+  }
+
   const adapter = new PrismaPg(pool);
   const client = new PrismaClient({ adapter });
 
-  if (process.env.NODE_ENV !== "production") {
-    globalForPrisma.prisma = client;
-  }
+  // Store the client globally for both dev and production
+  globalForPrisma.prisma = client;
+  
   return client;
 };
 
