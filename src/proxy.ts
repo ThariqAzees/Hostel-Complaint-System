@@ -105,17 +105,6 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/change-password", request.url));
   }
 
-  // 6. Prevent accessing /change-password if not required
-  if (isChangePasswordPage && !payload.mustChangePassword) {
-    if (payload.role === "ADMIN") {
-      return NextResponse.redirect(new URL("/admin/dashboard", request.url));
-    } else if (payload.role === "RC") {
-      return NextResponse.redirect(new URL("/rc/dashboard", request.url));
-    } else {
-      return NextResponse.redirect(new URL("/student/dashboard", request.url));
-    }
-  }
-
   // 7. Role-based authorization
   if (isAdminRoute && payload.role !== "ADMIN") {
     return NextResponse.redirect(new URL("/login", request.url));
