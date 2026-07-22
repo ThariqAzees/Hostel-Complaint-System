@@ -3,16 +3,12 @@ import { ComplaintStatus, ComplaintPriority } from "@/generated/prisma/enums";
 
 export type TransitionAction =
   | "ACKNOWLEDGE"
-  | "STUDENT_MARK_COMPLETED"
-  | "STUDENT_CONFIRM_FIXED"
   | "STUDENT_REOPEN"
   | "RC_VERIFY_CLOSE";
 
 // Valid role checks for each action
 const ACTION_ROLES: Record<TransitionAction, ("STUDENT" | "RC" | "ADMIN")[]> = {
   ACKNOWLEDGE: ["RC"],
-  STUDENT_MARK_COMPLETED: ["STUDENT"],
-  STUDENT_CONFIRM_FIXED: ["STUDENT"],
   STUDENT_REOPEN: ["STUDENT"],
   RC_VERIFY_CLOSE: ["RC"],
 };
@@ -20,20 +16,17 @@ const ACTION_ROLES: Record<TransitionAction, ("STUDENT" | "RC" | "ADMIN")[]> = {
 // Transition matrix mapping: Action + Current Status -> Target Status
 const TRANSITIONS: Record<TransitionAction, Partial<Record<ComplaintStatus, ComplaintStatus>>> = {
   ACKNOWLEDGE: {
-    SUBMITTED: "ACKNOWLEDGED",
-    REOPENED: "ACKNOWLEDGED",
-  },
-  STUDENT_MARK_COMPLETED: {
-    ACKNOWLEDGED: "AWAITING_STUDENT_CONFIRMATION",
-  },
-  STUDENT_CONFIRM_FIXED: {
-    AWAITING_STUDENT_CONFIRMATION: "AWAITING_RC_VERIFICATION",
+    SUBMITTED: "AWAITING_RC_VERIFICATION",
+    REOPENED: "AWAITING_RC_VERIFICATION",
   },
   STUDENT_REOPEN: {
-    AWAITING_STUDENT_CONFIRMATION: "REOPENED",
+    AWAITING_RC_VERIFICATION: "REOPENED",
+    AWAITING_STUDENT_CONFIRMATION: "REOPENED", // legacy compatibility
   },
   RC_VERIFY_CLOSE: {
     AWAITING_RC_VERIFICATION: "CLOSED",
+    AWAITING_STUDENT_CONFIRMATION: "CLOSED", // legacy compatibility
+    ACKNOWLEDGED: "CLOSED", // legacy compatibility
   },
 };
 
@@ -81,12 +74,9 @@ export async function transitionComplaint(
     }
 
     // 6. Update Complaint Status & Resolution Timestamps
-    const updateData: any = { status: targetStatus };
+    const updateData: { status: ComplaintStatus; closed_at?: Date; resolved_at?: Date } = { status: targetStatus };
     if (targetStatus === "CLOSED") {
       updateData.closed_at = new Date();
-      updateData.resolved_at = new Date();
-    }
-    if (targetStatus === "AWAITING_RC_VERIFICATION") {
       updateData.resolved_at = new Date();
     }
 
@@ -118,26 +108,6 @@ export async function transitionComplaint(
         recipientIds = [complaint.student_id];
         notifTitle = "Complaint Acknowledged";
         notifMessage = `Your complaint ${complaint.complaint_code} has been acknowledged.`;
-        break;
-      case "STUDENT_MARK_COMPLETED":
-        // Notify active RC
-        const rcUser = await tx.user.findFirst({
-          where: { role: "RC", is_active: true },
-          select: { id: true },
-        });
-        if (rcUser) recipientIds = [rcUser.id];
-        notifTitle = "Maintenance Marked Completed";
-        notifMessage = `Student ${studentName} marked complaint ${complaint.complaint_code} as completed. Pending student final confirmation.`;
-        break;
-      case "STUDENT_CONFIRM_FIXED":
-        // Notify active RC
-        const rcUserForConfirm = await tx.user.findFirst({
-          where: { role: "RC", is_active: true },
-          select: { id: true },
-        });
-        if (rcUserForConfirm) recipientIds = [rcUserForConfirm.id];
-        notifTitle = "Student Confirmed Fixed";
-        notifMessage = `Student ${studentName} confirmed complaint ${complaint.complaint_code} is fixed. Final verification pending.`;
         break;
       case "STUDENT_REOPEN":
         // Notify active RC

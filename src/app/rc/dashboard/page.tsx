@@ -144,9 +144,9 @@ export default async function RcDashboardPage({ searchParams }: RcDashboardPageP
   const getStatusLabel = (statusState: string) => {
     switch (statusState) {
       case "SUBMITTED": return "Submitted";
-      case "ACKNOWLEDGED": return "Acknowledged";
+      case "ACKNOWLEDGED": return "Acknowledged (Legacy)";
       case "IN_PROGRESS": return "In Progress";
-      case "AWAITING_STUDENT_CONFIRMATION": return "Awaiting Action";
+      case "AWAITING_STUDENT_CONFIRMATION": return "Awaiting RC Verification (Legacy)";
       case "AWAITING_RC_VERIFICATION": return "Awaiting RC Verification";
       case "REOPENED": return "Reopened";
       case "CLOSED": return "Closed";
@@ -180,7 +180,7 @@ export default async function RcDashboardPage({ searchParams }: RcDashboardPageP
           <span className={styles.statValue}>{submittedCount}</span>
         </div>
         <div className={styles.statCard} style={{ borderLeft: "3px solid #7e22ce" }}>
-          <span className={styles.statTitle}>Acknowledged</span>
+          <span className={styles.statTitle}>Acknowledged (Legacy)</span>
           <span className={styles.statValue}>{acknowledgedCount}</span>
         </div>
         <div className={styles.statCard} style={{ borderLeft: "3px solid #ef4444" }}>
@@ -188,7 +188,7 @@ export default async function RcDashboardPage({ searchParams }: RcDashboardPageP
           <span className={styles.statValue}>{overdueCount}</span>
         </div>
         <div className={styles.statCard} style={{ borderLeft: "3px solid #0369a1" }}>
-          <span className={styles.statTitle}>Awaiting Student</span>
+          <span className={styles.statTitle}>Awaiting RC (Legacy)</span>
           <span className={styles.statValue}>{awaitingStudentCount}</span>
         </div>
         <div className={styles.statCard} style={{ borderLeft: "3px solid #047857" }}>

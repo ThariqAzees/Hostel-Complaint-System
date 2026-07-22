@@ -101,9 +101,9 @@ export default async function AdminComplaintsPage({ searchParams }: AdminComplai
   const getStatusLabel = (statusState: string) => {
     switch (statusState) {
       case "SUBMITTED": return "Submitted";
-      case "ACKNOWLEDGED": return "Acknowledged";
+      case "ACKNOWLEDGED": return "Acknowledged (Legacy)";
       case "IN_PROGRESS": return "In Progress";
-      case "AWAITING_STUDENT_CONFIRMATION": return "Awaiting Action";
+      case "AWAITING_STUDENT_CONFIRMATION": return "Awaiting RC Verification (Legacy)";
       case "AWAITING_RC_VERIFICATION": return "Awaiting RC";
       case "REOPENED": return "Reopened";
       case "CLOSED": return "Closed";

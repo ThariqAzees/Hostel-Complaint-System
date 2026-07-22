@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -69,8 +70,8 @@ export default function AdminComplaintsFilter() {
         >
           <option value="ALL">All Statuses</option>
           <option value="SUBMITTED">Submitted</option>
-          <option value="ACKNOWLEDGED">Acknowledged</option>
-          <option value="AWAITING_STUDENT_CONFIRMATION">Awaiting Confirmation</option>
+          <option value="ACKNOWLEDGED">Acknowledged (Legacy)</option>
+          <option value="AWAITING_STUDENT_CONFIRMATION">Awaiting RC Verification (Legacy)</option>
           <option value="AWAITING_RC_VERIFICATION">Awaiting RC Verification</option>
           <option value="REOPENED">Reopened</option>
           <option value="CLOSED">Closed</option>

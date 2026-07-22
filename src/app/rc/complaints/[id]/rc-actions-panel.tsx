@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "../../../student/complaints/[id]/details.module.css";
-import { Check, Clipboard, Play, Send, ShieldAlert } from "lucide-react";
+import { Check, Clipboard, ShieldAlert } from "lucide-react";
 import { ComplaintStatus } from "@/generated/prisma/enums";
 
 interface RcActionsPanelProps {
@@ -83,6 +83,8 @@ export default function RcActionsPanel({ complaintId, status }: RcActionsPanelPr
           </div>
         );
       case "AWAITING_RC_VERIFICATION":
+      case "AWAITING_STUDENT_CONFIRMATION":
+      case "ACKNOWLEDGED":
         return (
           <div className={styles.confirmationPanel} style={{ background: "var(--card-bg)" }}>
             <h3 className={styles.confirmTitle}>Final Verification & Closure</h3>

@@ -105,9 +105,9 @@ export default async function StudentComplaintsPage({ searchParams }: Complaints
   const getStatusLabel = (statusState: string) => {
     switch (statusState) {
       case "SUBMITTED": return "Submitted";
-      case "ACKNOWLEDGED": return "Acknowledged";
+      case "ACKNOWLEDGED": return "Acknowledged (Legacy)";
       case "IN_PROGRESS": return "In Progress";
-      case "AWAITING_STUDENT_CONFIRMATION": return "Awaiting My Action";
+      case "AWAITING_STUDENT_CONFIRMATION": return "Awaiting RC Verification (Legacy)";
       case "AWAITING_RC_VERIFICATION": return "Awaiting RC Verification";
       case "REOPENED": return "Reopened";
       case "CLOSED": return "Closed";

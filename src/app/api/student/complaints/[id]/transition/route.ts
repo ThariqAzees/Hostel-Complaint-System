@@ -27,8 +27,6 @@ export async function POST(
 
     // Limit actions allowed by students
     const allowedActions: TransitionAction[] = [
-      "STUDENT_MARK_COMPLETED",
-      "STUDENT_CONFIRM_FIXED",
       "STUDENT_REOPEN",
     ];
     if (!allowedActions.includes(action)) {
@@ -42,8 +40,9 @@ export async function POST(
       message: "Complaint status updated successfully.",
       status: updated.status,
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Student transition error:", err);
-    return NextResponse.json({ error: err.message || "An internal error occurred" }, { status: 400 });
+    const message = err instanceof Error ? err.message : "An internal error occurred";
+    return NextResponse.json({ error: message }, { status: 400 });
   }
 }

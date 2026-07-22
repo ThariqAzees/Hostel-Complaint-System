@@ -5,7 +5,7 @@ import { getSessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import styles from "./details.module.css";
 import ConfirmationPanel from "./confirmation-panel";
-import { ArrowLeft, User, Calendar, RefreshCw, Award, Home, Image as ImageIcon } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -63,9 +63,9 @@ export default async function StudentComplaintDetailsPage({ params }: ComplaintD
   const getStatusLabel = (statusState: string) => {
     switch (statusState) {
       case "SUBMITTED": return "Submitted";
-      case "ACKNOWLEDGED": return "Acknowledged";
+      case "ACKNOWLEDGED": return "Acknowledged (Legacy)";
       case "IN_PROGRESS": return "In Progress";
-      case "AWAITING_STUDENT_CONFIRMATION": return "Awaiting My Action";
+      case "AWAITING_STUDENT_CONFIRMATION": return "Awaiting RC Verification (Legacy)";
       case "AWAITING_RC_VERIFICATION": return "Awaiting RC Verification";
       case "REOPENED": return "Reopened";
       case "CLOSED": return "Closed";
@@ -83,7 +83,7 @@ export default async function StudentComplaintDetailsPage({ params }: ComplaintD
     });
   };
 
-  const isAwaitingConfirmation = complaint.status === "AWAITING_STUDENT_CONFIRMATION" || complaint.status === "ACKNOWLEDGED";
+  const isAwaitingConfirmation = complaint.status === "AWAITING_RC_VERIFICATION" || complaint.status === "AWAITING_STUDENT_CONFIRMATION";
 
   return (
     <div className={`${styles.container} animate-fade`}>
