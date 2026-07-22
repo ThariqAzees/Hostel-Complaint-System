@@ -4,7 +4,6 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getSessionUser, validateCSRF } from "@/lib/auth";
 import { uploadComplaintImage, deleteComplaintImage } from "@/lib/storage";
-import { Complaint } from "@prisma/client";
 
 export async function POST(request: Request) {
   // CSRF validation
@@ -74,7 +73,7 @@ export async function POST(request: Request) {
     }
 
     const currentYear = new Date().getFullYear();
-    let complaintRecord: Complaint | null = null;
+    let complaintRecord: Awaited<ReturnType<typeof prisma.complaint.create>> | null = null;
 
     // Concurrency-safe optimistic insert transaction loop
     let attempts = 0;
