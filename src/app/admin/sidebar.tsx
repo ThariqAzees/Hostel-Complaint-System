@@ -1,10 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "./admin-layout.module.css";
-import { LayoutDashboard, Users, AlertCircle, ClipboardList, LogOut, KeyRound } from "lucide-react";
+import { LayoutDashboard, Users, AlertCircle, ClipboardList, LogOut, KeyRound, Menu, X } from "lucide-react";
 
 interface SidebarProps {
   user: {
@@ -15,6 +15,7 @@ interface SidebarProps {
 
 export default function Sidebar({ user }: SidebarProps) {
   const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleLogout = async () => {
     if (!confirm("Are you sure you want to log out?")) return;
@@ -56,44 +57,80 @@ export default function Sidebar({ user }: SidebarProps) {
     { name: "Change Password", href: "/change-password", icon: KeyRound },
   ];
 
+  const toggleSidebar = () => setIsOpen(!isOpen);
+
   return (
-    <aside className={styles.sidebar}>
-      <div className={styles.logoArea}>
-        <div className={styles.logoText}>ECH Portal</div>
-        <div className={styles.logoSub}>Mantharai Block Admin</div>
+    <>
+      {/* Mobile Header Bar */}
+      <div className={styles.mobileHeader}>
+        <button type="button" className={styles.menuBtn} onClick={toggleSidebar} aria-label="Toggle menu">
+          <Menu size={24} />
+        </button>
+        <div className={styles.logoText}>
+          ECH Portal <span className={styles.logoSub}>Admin</span>
+        </div>
+        <div style={{ width: "24px" }} />
       </div>
 
-      <nav className={styles.nav}>
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`${styles.navLink} ${isActive ? styles.activeLink : ""}`}
-            >
-              <Icon size={18} />
-              <span>{item.name}</span>
-            </Link>
-          );
-        })}
-      </nav>
+      {/* Overlay to close drawer on mobile */}
+      <div 
+        className={`${styles.sidebarOverlay} ${isOpen ? styles.sidebarOverlayOpen : ""}`} 
+        onClick={toggleSidebar}
+      />
 
-      <div>
-        <div className={styles.userBadge}>
-          <div className={styles.avatar}>{getInitials(user.name)}</div>
-          <div className={styles.userInfo}>
-            <span className={styles.userName}>{user.name}</span>
-            <span className={styles.userRole}>{user.role}</span>
+      {/* Sidebar Panel */}
+      <aside className={`${styles.sidebar} ${isOpen ? styles.sidebarOpen : ""}`}>
+        <div className={styles.sidebarHeader}>
+          <div className={styles.logoArea}>
+            <div className={styles.logoText}>ECH Portal</div>
+            <div className={styles.logoSub}>Mantharai Block Admin</div>
           </div>
+          {isOpen && (
+            <button 
+              type="button" 
+              className={styles.menuBtn} 
+              onClick={toggleSidebar}
+              aria-label="Close menu"
+              style={{ marginLeft: "auto" }}
+            >
+              <X size={20} />
+            </button>
+          )}
         </div>
 
-        <button type="button" className={styles.logoutBtn} onClick={handleLogout}>
-          <LogOut size={18} />
-          <span>Log Out</span>
-        </button>
-      </div>
-    </aside>
+        <nav className={styles.nav}>
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`${styles.navLink} ${isActive ? styles.activeLink : ""}`}
+                onClick={() => setIsOpen(false)}
+              >
+                <Icon size={18} />
+                <span>{item.name}</span>
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div>
+          <div className={styles.userBadge}>
+            <div className={styles.avatar}>{getInitials(user.name)}</div>
+            <div className={styles.userInfo}>
+              <span className={styles.userName}>{user.name}</span>
+              <span className={styles.userRole}>{user.role}</span>
+            </div>
+          </div>
+
+          <button type="button" className={styles.logoutBtn} onClick={handleLogout}>
+            <LogOut size={18} />
+            <span>Log Out</span>
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }

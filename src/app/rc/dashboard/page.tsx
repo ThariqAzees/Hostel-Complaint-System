@@ -8,7 +8,8 @@ import { checkAndUpdateOverdueComplaints } from "@/lib/state-machine";
 import { cookies } from "next/headers";
 import styles from "./dashboard.module.css";
 import RcFilter from "./rc-filter";
-import { ChevronLeft, ChevronRight, FileText, ClipboardList } from "lucide-react";
+import { ChevronLeft, ChevronRight, FileText } from "lucide-react";
+import { ComplaintStatus } from "@/generated/prisma/enums";
 
 export const dynamic = "force-dynamic";
 
@@ -45,7 +46,7 @@ export default async function RcDashboardPage({ searchParams }: RcDashboardPageP
   const skip = (page - 1) * pageSize;
 
   // Build filter object for all complaints
-  const where: any = {};
+  const where: NonNullable<Parameters<typeof prisma.complaint.findMany>[0]>["where"] = {};
 
   if (search) {
     where.OR = [
@@ -56,7 +57,7 @@ export default async function RcDashboardPage({ searchParams }: RcDashboardPageP
   }
 
   if (status && status !== "ALL") {
-    where.status = status;
+    where.status = status as ComplaintStatus;
   }
 
   if (category && category !== "ALL") {
@@ -216,11 +217,11 @@ export default async function RcDashboardPage({ searchParams }: RcDashboardPageP
                 <tr>
                   <th className={styles.th}>Code</th>
                   <th className={styles.th}>Student Name</th>
-                  <th className={styles.th}>Room</th>
-                  <th className={styles.th}>Category</th>
+                  <th className={`${styles.th} ${styles.mobileHidden}`}>Room</th>
+                  <th className={`${styles.th} ${styles.mobileHidden}`}>Category</th>
                   <th className={styles.th}>Days Pending</th>
                   <th className={styles.th}>Current Status</th>
-                  <th className={styles.th}>Priority</th>
+                  <th className={`${styles.th} ${styles.mobileHidden}`}>Priority</th>
                 </tr>
               </thead>
               <tbody>
@@ -232,9 +233,10 @@ export default async function RcDashboardPage({ searchParams }: RcDashboardPageP
                   >
                     <td className={`${styles.td} ${styles.codeCell}`}>{complaint.complaint_code}</td>
                     <td className={styles.td} style={{ fontWeight: 600 }}>{complaint.student.name}</td>
-                    <td className={styles.td}>Room {complaint.student.room_number || "—"}</td>
-                    <td className={styles.td}>{complaint.category}</td>
+                    <td className={`${styles.td} ${styles.mobileHidden}`}>Room {complaint.student.room_number || "—"}</td>
+                    <td className={`${styles.td} ${styles.mobileHidden}`}>{complaint.category}</td>
                     <td className={styles.td} style={{ color: "#ef4444", fontWeight: 700 }}>
+                      {/* eslint-disable-next-line react-hooks/purity */}
                       {Math.floor((Date.now() - new Date(complaint.created_at).getTime()) / (1000 * 60 * 60 * 24))} Days
                     </td>
                     <td className={styles.td}>
@@ -242,7 +244,7 @@ export default async function RcDashboardPage({ searchParams }: RcDashboardPageP
                         {getStatusLabel(complaint.status)}
                       </span>
                     </td>
-                    <td className={styles.td}>
+                    <td className={`${styles.td} ${styles.mobileHidden}`}>
                       <span style={{ display: "inline-flex", padding: "4px 8px", borderRadius: "4px", fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase", background: "#ef4444", color: "white" }}>
                         HIGH
                       </span>
@@ -275,11 +277,11 @@ export default async function RcDashboardPage({ searchParams }: RcDashboardPageP
                 <tr>
                   <th className={styles.th}>Code</th>
                   <th className={styles.th}>Student Name</th>
-                  <th className={styles.th}>Room</th>
+                  <th className={`${styles.th} ${styles.mobileHidden}`}>Room</th>
                   <th className={styles.th}>Title</th>
-                  <th className={styles.th}>Category</th>
+                  <th className={`${styles.th} ${styles.mobileHidden}`}>Category</th>
                   <th className={styles.th}>Status</th>
-                  <th className={styles.th}>Raised On</th>
+                  <th className={`${styles.th} ${styles.mobileHidden}`}>Raised On</th>
                 </tr>
               </thead>
               <tbody>
@@ -291,9 +293,9 @@ export default async function RcDashboardPage({ searchParams }: RcDashboardPageP
                   >
                     <td className={`${styles.td} ${styles.codeCell}`}>{complaint.complaint_code}</td>
                     <td className={styles.td} style={{ fontWeight: 600 }}>{complaint.student.name}</td>
-                    <td className={styles.td}>Room {complaint.student.room_number || "—"}</td>
+                    <td className={`${styles.td} ${styles.mobileHidden}`}>Room {complaint.student.room_number || "—"}</td>
                     <td className={`${styles.td} ${styles.titleCell}`}>{complaint.title}</td>
-                    <td className={styles.td}>{complaint.category}</td>
+                    <td className={`${styles.td} ${styles.mobileHidden}`}>{complaint.category}</td>
                     <td className={styles.td}>
                       <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
                         <span className={`${styles.badge} ${getStatusBadgeClass(complaint.status)}`}>
@@ -306,7 +308,7 @@ export default async function RcDashboardPage({ searchParams }: RcDashboardPageP
                         )}
                       </div>
                     </td>
-                    <td className={styles.td}>{formatDate(complaint.created_at)}</td>
+                    <td className={`${styles.td} ${styles.mobileHidden}`}>{formatDate(complaint.created_at)}</td>
                   </ClickableRow>
                 ))}
               </tbody>

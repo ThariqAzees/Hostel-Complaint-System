@@ -21,16 +21,36 @@
   position: sticky;
   top: 0;
   height: 100vh;
+  z-index: 99;
+  transition: transform 0.3s ease;
 }
 
 @media (max-width: 768px) {
   .sidebar {
-    display: none; /* We can add mobile drawer later if needed */
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    height: 100vh;
+    width: 260px;
+    transform: translateX(-100%);
+    box-shadow: var(--shadow-lg);
+  }
+  
+  .sidebarOpen {
+    transform: translateX(0);
   }
 }
 
-.logoArea {
+.sidebarHeader {
+  display: flex;
+  align-items: center;
   margin-bottom: 40px;
+  justify-content: space-between;
+}
+
+.logoArea {
+  margin-bottom: 0;
 }
 
 .logoText {
@@ -68,6 +88,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  min-height: 44px;
 }
 
 .navLink:hover {
@@ -154,6 +175,12 @@
   overflow: hidden;
 }
 
+@media (max-width: 768px) {
+  .main {
+    height: calc(100vh - 64px);
+  }
+}
+
 .header {
   height: 70px;
   background: var(--card-bg);
@@ -167,8 +194,57 @@
 
 @media (max-width: 768px) {
   .header {
-    padding: 0 20px;
+    display: none;
   }
+}
+
+/* Header bar for mobile screen toggles */
+.mobileHeader {
+  height: 64px;
+  background: #0f172a;
+  color: white;
+  padding: 0 20px;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+@media (max-width: 768px) {
+  .mobileHeader {
+    display: flex;
+  }
+}
+
+.menuBtn {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+}
+
+.sidebarOverlay {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 45;
+  display: none;
+}
+
+.sidebarOverlayOpen {
+  display: block;
 }
 
 .headerTitle {

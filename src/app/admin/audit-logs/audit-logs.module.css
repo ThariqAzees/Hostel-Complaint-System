@@ -205,3 +205,28 @@
   font-weight: 700;
   color: var(--foreground);
 }
+
+@media (max-width: 768px) {
+  .mobileHidden {
+    display: none !important;
+  }
+}
+
+@media (max-width: 580px) {
+  .pagination {
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    text-align: center;
+  }
+  .paginationButtons {
+    width: 100%;
+    justify-content: center;
+    gap: 12px;
+  }
+  .pageBtn {
+    flex: 1;
+    justify-content: center;
+    min-height: 44px; /* touch target helper */
+  }
+}

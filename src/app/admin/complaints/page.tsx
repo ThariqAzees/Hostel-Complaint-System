@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db";
 import styles from "./complaints.module.css";
 import AdminComplaintsFilter from "./complaints-filter";
 import { ChevronLeft, ChevronRight, FileText } from "lucide-react";
+import { ComplaintStatus } from "@/generated/prisma/enums";
 
 export const dynamic = "force-dynamic";
 
@@ -34,7 +35,7 @@ export default async function AdminComplaintsPage({ searchParams }: AdminComplai
   const pageSize = 10;
   const skip = (page - 1) * pageSize;
 
-  const where: any = {};
+  const where: NonNullable<Parameters<typeof prisma.complaint.findMany>[0]>["where"] = {};
 
   if (search) {
     where.OR = [
@@ -45,7 +46,7 @@ export default async function AdminComplaintsPage({ searchParams }: AdminComplai
   }
 
   if (status && status !== "ALL") {
-    where.status = status;
+    where.status = status as ComplaintStatus;
   }
 
   if (category && category !== "ALL") {
@@ -141,11 +142,11 @@ export default async function AdminComplaintsPage({ searchParams }: AdminComplai
               <tr>
                 <th className={styles.th}>Code</th>
                 <th className={styles.th}>Student</th>
-                <th className={styles.th}>Room</th>
+                <th className={`${styles.th} ${styles.mobileHidden}`}>Room</th>
                 <th className={styles.th}>Title</th>
-                <th className={styles.th}>Category</th>
+                <th className={`${styles.th} ${styles.mobileHidden}`}>Category</th>
                 <th className={styles.th}>Status</th>
-                <th className={styles.th}>Date</th>
+                <th className={`${styles.th} ${styles.mobileHidden}`}>Date</th>
               </tr>
             </thead>
             <tbody>
@@ -153,17 +154,17 @@ export default async function AdminComplaintsPage({ searchParams }: AdminComplai
                 <tr key={complaint.id} className={styles.tr}>
                   <td className={`${styles.td} ${styles.codeCell}`}>{complaint.complaint_code}</td>
                   <td className={`${styles.td} ${styles.studentCell}`}>{complaint.student.name}</td>
-                  <td className={styles.td}>Room {complaint.student.room_number || "—"}</td>
+                  <td className={`${styles.td} ${styles.mobileHidden}`}>Room {complaint.student.room_number || "—"}</td>
                   <td className={styles.td} style={{ maxWidth: "240px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                     {complaint.title}
                   </td>
-                  <td className={styles.td}>{complaint.category}</td>
+                  <td className={`${styles.td} ${styles.mobileHidden}`}>{complaint.category}</td>
                   <td className={styles.td}>
                     <span className={`${styles.badge} ${getStatusBadgeClass(complaint.status)}`}>
                       {getStatusLabel(complaint.status)}
                     </span>
                   </td>
-                  <td className={styles.td}>{formatDate(complaint.created_at)}</td>
+                  <td className={`${styles.td} ${styles.mobileHidden}`}>{formatDate(complaint.created_at)}</td>
                 </tr>
               ))}
             </tbody>

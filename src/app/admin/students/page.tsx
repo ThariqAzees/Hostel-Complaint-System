@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import styles from "./students.module.css";
 import { 
   Plus, 
@@ -11,7 +11,6 @@ import {
   RotateCcw, 
   X, 
   FileSpreadsheet, 
-  UserPlus, 
   Check, 
   AlertTriangle,
   ChevronLeft,
@@ -91,7 +90,7 @@ export default function StudentManagement() {
   const [importSuccessMsg, setImportSuccessMsg] = useState<string | null>(null);
 
   // Fetch student list
-  const fetchStudents = async () => {
+  const fetchStudents = useCallback(async () => {
     setIsLoading(true);
     try {
       const url = `/api/admin/students?page=${page}&limit=10&search=${encodeURIComponent(search)}&status=${statusFilter}&sortField=${sortField}&sortOrder=${sortOrder}`;
@@ -107,11 +106,14 @@ export default function StudentManagement() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [page, search, statusFilter, sortField, sortOrder]);
 
   useEffect(() => {
-    fetchStudents();
-  }, [page, statusFilter, sortField, sortOrder]);
+    const timer = setTimeout(() => {
+      fetchStudents();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [fetchStudents]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -470,8 +472,8 @@ export default function StudentManagement() {
                   >
                     Room {sortField === "room_number" && (sortOrder === "asc" ? "▲" : "▼")}
                   </th>
-                  <th className={styles.th}>Date of Birth</th>
-                  <th className={styles.th}>Contact Info</th>
+                  <th className={`${styles.th} ${styles.mobileHidden}`}>Date of Birth</th>
+                  <th className={`${styles.th} ${styles.mobileHidden}`}>Contact Info</th>
                   <th className={styles.th}>Status</th>
                   <th className={styles.th} style={{ textAlign: "right" }}>Actions</th>
                 </tr>
@@ -480,7 +482,7 @@ export default function StudentManagement() {
                 {students.map((student) => (
                   <tr key={student.id} className={styles.tr}>
                     <td className={styles.td} style={{ fontFamily: "monospace", fontWeight: 600 }}>
-                      {student.registration_number}
+                       {student.registration_number}
                     </td>
                     <td className={styles.td}>
                       <div className={styles.studentNameCell}>
@@ -495,8 +497,8 @@ export default function StudentManagement() {
                     <td className={styles.td} style={{ fontWeight: 600 }}>
                       {student.room_number}
                     </td>
-                    <td className={styles.td}>{formatDate(student.date_of_birth)}</td>
-                    <td className={styles.td}>{student.phone_number || "—"}</td>
+                    <td className={`${styles.td} ${styles.mobileHidden}`}>{formatDate(student.date_of_birth)}</td>
+                    <td className={`${styles.td} ${styles.mobileHidden}`}>{student.phone_number || "—"}</td>
                     <td className={styles.td}>
                       <span className={`${styles.badge} ${student.is_active ? styles.badgeActive : styles.badgeInactive}`}>
                         {student.is_active ? "Active" : "Inactive"}

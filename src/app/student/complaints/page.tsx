@@ -9,6 +9,7 @@ import { cookies } from "next/headers";
 import styles from "./complaints.module.css";
 import ComplaintsFilter from "./complaints-filter";
 import { ChevronLeft, ChevronRight, FileText, Plus } from "lucide-react";
+import { ComplaintStatus } from "@/generated/prisma/enums";
 
 export const dynamic = "force-dynamic";
 
@@ -45,7 +46,7 @@ export default async function StudentComplaintsPage({ searchParams }: Complaints
   const skip = (page - 1) * pageSize;
 
   // Build prisma query filters
-  const where: any = {
+  const where: NonNullable<Parameters<typeof prisma.complaint.findMany>[0]>["where"] = {
     student_id: studentUser.id,
   };
 
@@ -57,7 +58,7 @@ export default async function StudentComplaintsPage({ searchParams }: Complaints
   }
 
   if (status && status !== "ALL") {
-    where.status = status;
+    where.status = status as ComplaintStatus;
   }
 
   if (category && category !== "ALL") {
@@ -124,7 +125,7 @@ export default async function StudentComplaintsPage({ searchParams }: Complaints
 
   return (
     <div className={`${styles.container} animate-fade`}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+      <div className={styles.pageHeader}>
         <div className={styles.header}>
           <h1 className={styles.title}>My Complaints</h1>
           <p className={styles.subtitle}>Track and manage your submitted hostel maintenance complaints.</p>

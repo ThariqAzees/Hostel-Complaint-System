@@ -285,3 +285,37 @@
 .badgeAwaitingRc { background: #d1fae5; color: #047857; }
 .badgeReopened { background: #fee2e2; color: #b91c1c; }
 .badgeClosed { background: #e0e7ff; color: #4338ca; }
+
+@media (max-width: 580px) {
+  .filtersSection {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .searchWrapper, .filterWrapper {
+    width: 100%;
+    min-width: 0;
+  }
+  .pagination {
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    text-align: center;
+  }
+  .paginationButtons {
+    width: 100%;
+    justify-content: center;
+    gap: 12px;
+  }
+  .pageBtn {
+    flex: 1;
+    justify-content: center;
+    min-height: 44px; /* touch target helper */
+  }
+}
+
+@media (max-width: 768px) {
+  .mobileHidden {
+    display: none !important;
+  }
+}

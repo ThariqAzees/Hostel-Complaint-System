@@ -1,7 +1,7 @@
 import React from "react";
 import { prisma } from "@/lib/db";
 import styles from "./dashboard.module.css";
-import { Users, AlertCircle, CheckCircle, Clock, ClipboardList, Activity, AlertTriangle } from "lucide-react";
+import { Users, AlertCircle, CheckCircle, Clock, ClipboardList, Activity } from "lucide-react";
 import { checkAndUpdateOverdueComplaints } from "@/lib/state-machine";
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth";
@@ -107,6 +107,7 @@ export default async function AdminDashboard() {
   };
 
   const getDaysPending = (createdDate: Date) => {
+    // eslint-disable-next-line react-hooks/purity
     const diffTime = Math.abs(Date.now() - createdDate.getTime());
     return Math.floor(diffTime / (1000 * 60 * 60 * 24));
   };
@@ -211,11 +212,11 @@ export default async function AdminDashboard() {
                 <tr>
                   <th className={styles.overdueTh}>Code</th>
                   <th className={styles.overdueTh}>Student</th>
-                  <th className={styles.overdueTh}>Room</th>
-                  <th className={styles.overdueTh}>Category</th>
+                  <th className={`${styles.overdueTh} ${styles.mobileHidden}`}>Room</th>
+                  <th className={`${styles.overdueTh} ${styles.mobileHidden}`}>Category</th>
                   <th className={styles.overdueTh}>Days Pending</th>
                   <th className={styles.overdueTh}>Status</th>
-                  <th className={styles.overdueTh}>Priority</th>
+                  <th className={`${styles.overdueTh} ${styles.mobileHidden}`}>Priority</th>
                 </tr>
               </thead>
               <tbody>
@@ -223,15 +224,15 @@ export default async function AdminDashboard() {
                   <tr key={complaint.id} className={styles.overdueTr}>
                     <td className={`${styles.overdueTd} ${styles.codeCell}`}>{complaint.complaint_code}</td>
                     <td className={styles.overdueTd} style={{ fontWeight: 600 }}>{complaint.student.name}</td>
-                    <td className={styles.overdueTd}>Room {complaint.student.room_number || "—"}</td>
-                    <td className={styles.overdueTd}>{complaint.category}</td>
+                    <td className={`${styles.overdueTd} ${styles.mobileHidden}`}>Room {complaint.student.room_number || "—"}</td>
+                    <td className={`${styles.overdueTd} ${styles.mobileHidden}`}>{complaint.category}</td>
                     <td className={styles.overdueTd} style={{ color: "#ef4444", fontWeight: 700 }}>
                       {getDaysPending(complaint.created_at)} Days
                     </td>
                     <td className={styles.overdueTd}>
                       <span className={styles.badgeRed}>{getStatusLabel(complaint.status)}</span>
                     </td>
-                    <td className={styles.overdueTd}>
+                    <td className={`${styles.overdueTd} ${styles.mobileHidden}`}>
                       <span className={styles.badgeRed} style={{ background: "#ef4444", color: "white" }}>
                         HIGH
                       </span>

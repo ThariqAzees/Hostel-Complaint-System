@@ -166,3 +166,15 @@
     transform: translateY(0);
   }
 }
+
+@media (max-width: 480px) {
+  .dropdown {
+    position: fixed;
+    top: 64px;
+    left: 16px;
+    right: 16px;
+    width: auto;
+    max-width: none;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+  }
+}

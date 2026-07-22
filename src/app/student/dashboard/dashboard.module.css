@@ -291,3 +291,27 @@
   gap: 8px;
   text-align: center;
 }
+
+@media (max-width: 580px) {
+  .studentName {
+    font-size: 1.4rem;
+    word-break: break-word;
+  }
+  .complaintItem {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+  .complaintRight {
+    align-items: flex-start;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    border-top: 1px solid var(--card-border);
+    padding-top: 12px;
+  }
+  .statsGrid {
+    grid-template-columns: 1fr; /* single column on narrow screens for readability */
+    gap: 12px;
+  }
+}

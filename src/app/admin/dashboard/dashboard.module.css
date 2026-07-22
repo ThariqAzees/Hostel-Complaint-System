@@ -304,3 +304,9 @@
   background: rgba(239, 68, 68, 0.15);
   color: #b91c1c;
 }
+
+@media (max-width: 768px) {
+  .mobileHidden {
+    display: none !important;
+  }
+}

@@ -32,7 +32,7 @@ export default async function AdminAuditLogsPage({ searchParams }: AdminAuditLog
   const pageSize = 15; // Displays slightly more logs per page since they are simple text
   const skip = (page - 1) * pageSize;
 
-  const where: any = {};
+  const where: NonNullable<Parameters<typeof prisma.auditLog.findMany>[0]>["where"] = {};
 
   if (search) {
     where.OR = [
@@ -115,7 +115,7 @@ export default async function AdminAuditLogsPage({ searchParams }: AdminAuditLog
                 <th className={styles.th}>Timestamp</th>
                 <th className={styles.th}>User</th>
                 <th className={styles.th}>Action</th>
-                <th className={styles.th}>Entity ID</th>
+                <th className={`${styles.th} ${styles.mobileHidden}`}>Entity ID</th>
                 <th className={styles.th}>Description</th>
               </tr>
             </thead>
@@ -127,7 +127,7 @@ export default async function AdminAuditLogsPage({ searchParams }: AdminAuditLog
                     {log.user.name} <span style={{ fontWeight: 400, fontSize: "0.75rem", color: "var(--text-light)" }}>({log.user.role})</span>
                   </td>
                   <td className={`${styles.td} ${styles.actionCell}`}>{getActionLabel(log.action)}</td>
-                  <td className={`${styles.td} ${styles.entityCell}`}>
+                  <td className={`${styles.td} ${styles.entityCell} ${styles.mobileHidden}`}>
                     {log.entity_type}: {log.entity_id.slice(0, 8)}...
                   </td>
                   <td className={styles.td} style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>{log.description}</td>

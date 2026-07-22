@@ -191,3 +191,15 @@
 .footerText strong {
   color: var(--text-muted);
 }
+
+@media (max-width: 480px) {
+  .card {
+    padding: 24px 16px;
+  }
+  .logo {
+    font-size: 1.8rem;
+  }
+  .title {
+    font-size: 1.3rem;
+  }
+}

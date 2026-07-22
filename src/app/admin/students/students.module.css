@@ -477,3 +477,22 @@
   color: var(--text-muted);
   gap: 16px;
 }
+
+@media (max-width: 768px) {
+  .mobileHidden {
+    display: none !important;
+  }
+}
+
+@media (max-width: 580px) {
+  .pagination {
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    text-align: center;
+  }
+  .paginationBtns {
+    width: 100%;
+    justify-content: center;
+  }
+}
