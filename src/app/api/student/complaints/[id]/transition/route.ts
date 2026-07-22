@@ -27,6 +27,7 @@ export async function POST(
 
     // Limit actions allowed by students
     const allowedActions: TransitionAction[] = [
+      "STUDENT_MARK_COMPLETED",
       "STUDENT_REOPEN",
     ];
     if (!allowedActions.includes(action)) {

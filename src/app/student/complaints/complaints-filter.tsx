@@ -89,8 +89,8 @@ export default function ComplaintsFilter() {
         >
           <option value="ALL">All Statuses</option>
           <option value="SUBMITTED">Submitted</option>
-          <option value="ACKNOWLEDGED">Acknowledged (Legacy)</option>
-          <option value="AWAITING_STUDENT_CONFIRMATION">Awaiting RC Verification (Legacy)</option>
+          <option value="ACKNOWLEDGED">Acknowledged</option>
+          <option value="AWAITING_STUDENT_CONFIRMATION">Waiting for Your Confirmation</option>
           <option value="AWAITING_RC_VERIFICATION">Awaiting RC Verification</option>
           <option value="REOPENED">Reopened</option>
           <option value="CLOSED">Closed</option>

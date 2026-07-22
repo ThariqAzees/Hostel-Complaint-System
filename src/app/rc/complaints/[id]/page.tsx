@@ -58,9 +58,9 @@ export default async function RcComplaintDetailsPage({ params }: RcComplaintDeta
   const getStatusLabel = (statusState: string) => {
     switch (statusState) {
       case "SUBMITTED": return "Submitted";
-      case "ACKNOWLEDGED": return "Acknowledged (Legacy)";
+      case "ACKNOWLEDGED": return "Acknowledged";
       case "IN_PROGRESS": return "In Progress";
-      case "AWAITING_STUDENT_CONFIRMATION": return "Awaiting RC Verification (Legacy)";
+      case "AWAITING_STUDENT_CONFIRMATION": return "Awaiting Student Confirmation";
       case "AWAITING_RC_VERIFICATION": return "Awaiting My Verification";
       case "REOPENED": return "Reopened";
       case "CLOSED": return "Closed";

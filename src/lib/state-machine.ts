@@ -3,12 +3,14 @@ import { ComplaintStatus, ComplaintPriority } from "@/generated/prisma/enums";
 
 export type TransitionAction =
   | "ACKNOWLEDGE"
+  | "STUDENT_MARK_COMPLETED"
   | "STUDENT_REOPEN"
   | "RC_VERIFY_CLOSE";
 
 // Valid role checks for each action
 const ACTION_ROLES: Record<TransitionAction, ("STUDENT" | "RC" | "ADMIN")[]> = {
   ACKNOWLEDGE: ["RC"],
+  STUDENT_MARK_COMPLETED: ["STUDENT"],
   STUDENT_REOPEN: ["STUDENT"],
   RC_VERIFY_CLOSE: ["RC"],
 };
@@ -16,17 +18,17 @@ const ACTION_ROLES: Record<TransitionAction, ("STUDENT" | "RC" | "ADMIN")[]> = {
 // Transition matrix mapping: Action + Current Status -> Target Status
 const TRANSITIONS: Record<TransitionAction, Partial<Record<ComplaintStatus, ComplaintStatus>>> = {
   ACKNOWLEDGE: {
-    SUBMITTED: "AWAITING_RC_VERIFICATION",
-    REOPENED: "AWAITING_RC_VERIFICATION",
+    SUBMITTED: "AWAITING_STUDENT_CONFIRMATION",
+    REOPENED: "AWAITING_STUDENT_CONFIRMATION",
+  },
+  STUDENT_MARK_COMPLETED: {
+    AWAITING_STUDENT_CONFIRMATION: "AWAITING_RC_VERIFICATION",
   },
   STUDENT_REOPEN: {
-    AWAITING_RC_VERIFICATION: "REOPENED",
-    AWAITING_STUDENT_CONFIRMATION: "REOPENED", // legacy compatibility
+    AWAITING_STUDENT_CONFIRMATION: "REOPENED",
   },
   RC_VERIFY_CLOSE: {
     AWAITING_RC_VERIFICATION: "CLOSED",
-    AWAITING_STUDENT_CONFIRMATION: "CLOSED", // legacy compatibility
-    ACKNOWLEDGED: "CLOSED", // legacy compatibility
   },
 };
 
@@ -108,6 +110,16 @@ export async function transitionComplaint(
         recipientIds = [complaint.student_id];
         notifTitle = "Complaint Acknowledged";
         notifMessage = `Your complaint ${complaint.complaint_code} has been acknowledged.`;
+        break;
+      case "STUDENT_MARK_COMPLETED":
+        // Notify active RC
+        const rcUser = await tx.user.findFirst({
+          where: { role: "RC", is_active: true },
+          select: { id: true },
+        });
+        if (rcUser) recipientIds = [rcUser.id];
+        notifTitle = "Maintenance Marked Completed";
+        notifMessage = `Student ${studentName} marked complaint ${complaint.complaint_code} as completed. Pending RC final verification.`;
         break;
       case "STUDENT_REOPEN":
         // Notify active RC

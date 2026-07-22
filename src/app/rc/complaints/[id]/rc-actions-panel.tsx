@@ -83,8 +83,6 @@ export default function RcActionsPanel({ complaintId, status }: RcActionsPanelPr
           </div>
         );
       case "AWAITING_RC_VERIFICATION":
-      case "AWAITING_STUDENT_CONFIRMATION":
-      case "ACKNOWLEDGED":
         return (
           <div className={styles.confirmationPanel} style={{ background: "var(--card-bg)" }}>
             <h3 className={styles.confirmTitle}>Final Verification & Closure</h3>

@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./details.module.css";
-import { X, ShieldAlert } from "lucide-react";
+import { Check, X, ShieldAlert } from "lucide-react";
 
 interface ConfirmationPanelProps {
   complaintId: string;
@@ -11,13 +11,14 @@ interface ConfirmationPanelProps {
   createdAt: string;
 }
 
-export default function ConfirmationPanel({ complaintId, createdAt }: ConfirmationPanelProps) {
+export default function ConfirmationPanel(props: ConfirmationPanelProps) {
+  const { complaintId, createdAt } = props;
   const router = useRouter();
   const [remarks, setRemarks] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleAction = async (action: "STUDENT_REOPEN") => {
+  const handleAction = async (action: "STUDENT_MARK_COMPLETED" | "STUDENT_REOPEN") => {
     setError(null);
     setIsLoading(true);
 
@@ -70,15 +71,15 @@ export default function ConfirmationPanel({ complaintId, createdAt }: Confirmati
   return (
     <div className={styles.confirmationPanel}>
       <div>
-        <h3 className={styles.confirmTitle}>Report Unresolved Issue</h3>
+        <h3 className={styles.confirmTitle}>Action Required: Verify Repair</h3>
         <p className={styles.confirmSub}>
-          If the maintenance work is still unresolved, you can reopen this complaint. Please note that reopening is only permitted 2 days after the complaint was raised.
+          Please inspect the repair work. If it is resolved to your satisfaction, mark it as completed. If it remains unresolved, you can reopen it (reopening is only available after 2 days).
         </p>
       </div>
 
       <textarea
         className={styles.remarksTextarea}
-        placeholder="Add remarks explaining why the issue is still unresolved (required)..."
+        placeholder="Add remarks or feedback (required if reopening)..."
         value={remarks}
         onChange={(e) => setRemarks(e.target.value)}
         maxLength={300}
@@ -94,6 +95,17 @@ export default function ConfirmationPanel({ complaintId, createdAt }: Confirmati
 
       <div className={styles.confirmActions} style={{ display: "flex", flexDirection: "column", gap: "12px", width: "100%" }}>
         <div style={{ display: "flex", gap: "12px", width: "100%" }}>
+          <button
+            type="button"
+            className={`${styles.btnConfirm} ${styles.btnConfirmSuccess}`}
+            onClick={() => handleAction("STUDENT_MARK_COMPLETED")}
+            disabled={isLoading}
+            style={{ flex: 1 }}
+          >
+            <Check size={18} />
+            <span>Mark as Completed</span>
+          </button>
+
           {canReopen ? (
             <button
               type="button"

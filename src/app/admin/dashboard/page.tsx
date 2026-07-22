@@ -115,8 +115,8 @@ export default async function AdminDashboard() {
   const getStatusLabel = (statusState: string) => {
     switch (statusState) {
       case "SUBMITTED": return "Submitted";
-      case "ACKNOWLEDGED": return "Acknowledged (Legacy)";
-      case "AWAITING_STUDENT_CONFIRMATION": return "Awaiting RC Verification (Legacy)";
+      case "ACKNOWLEDGED": return "Acknowledged";
+      case "AWAITING_STUDENT_CONFIRMATION": return "Awaiting Student";
       case "AWAITING_RC_VERIFICATION": return "Awaiting RC";
       case "REOPENED": return "Reopened";
       case "CLOSED": return "Closed";
@@ -126,8 +126,8 @@ export default async function AdminDashboard() {
 
   const statusItems = [
     { name: "Submitted (New)", count: submittedComplaints, color: "#64748b" }, // Slate
-    { name: "Acknowledged (Legacy)", count: acknowledgedComplaints, color: "#a855f7" }, // Purple
-    { name: "Awaiting RC Verification (Legacy)", count: awaitingStudentComplaints, color: "#0ea5e9" }, // Sky
+    { name: "Acknowledged", count: acknowledgedComplaints, color: "#a855f7" }, // Purple
+    { name: "Awaiting Student", count: awaitingStudentComplaints, color: "#0ea5e9" }, // Sky
     { name: "Awaiting RC Verification", count: awaitingRcVerificationComplaints, color: "#10b981" }, // Emerald
     { name: "Reopened", count: reopenedComplaints, color: "#ef4444" }, // Rose
     { name: "Closed (Verified)", count: closedComplaints, color: "#6366f1" }, // Indigo

@@ -63,9 +63,9 @@ export default async function StudentComplaintDetailsPage({ params }: ComplaintD
   const getStatusLabel = (statusState: string) => {
     switch (statusState) {
       case "SUBMITTED": return "Submitted";
-      case "ACKNOWLEDGED": return "Acknowledged (Legacy)";
+      case "ACKNOWLEDGED": return "Acknowledged";
       case "IN_PROGRESS": return "In Progress";
-      case "AWAITING_STUDENT_CONFIRMATION": return "Awaiting RC Verification (Legacy)";
+      case "AWAITING_STUDENT_CONFIRMATION": return "Waiting for Your Confirmation";
       case "AWAITING_RC_VERIFICATION": return "Awaiting RC Verification";
       case "REOPENED": return "Reopened";
       case "CLOSED": return "Closed";
@@ -83,7 +83,7 @@ export default async function StudentComplaintDetailsPage({ params }: ComplaintD
     });
   };
 
-  const isAwaitingConfirmation = complaint.status === "AWAITING_RC_VERIFICATION" || complaint.status === "AWAITING_STUDENT_CONFIRMATION";
+  const isAwaitingConfirmation = complaint.status === "AWAITING_STUDENT_CONFIRMATION";
 
   return (
     <div className={`${styles.container} animate-fade`}>
