@@ -16,12 +16,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Username and password are required" }, { status: 400 });
     }
 
+    const trimmedUsername = username.trim();
+    const normalizedUsername = trimmedUsername.includes("@") ? trimmedUsername.toLowerCase() : trimmedUsername;
+
     // Try to find the user by registration_number (for students) or email (for admins/RCs)
-    let user = await prisma.user.findFirst({
+    const user = await prisma.user.findFirst({
       where: {
         OR: [
-          { registration_number: username },
-          { email: username }
+          { registration_number: normalizedUsername },
+          { email: normalizedUsername }
         ]
       }
     });

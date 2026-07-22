@@ -4,10 +4,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getSessionUser, validateCSRF } from "@/lib/auth";
 import { uploadComplaintImage, deleteComplaintImage } from "@/lib/storage";
-
-// Supported image MIME types
-const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+import { Complaint } from "@prisma/client";
 
 export async function POST(request: Request) {
   // CSRF validation
@@ -67,13 +64,17 @@ export async function POST(request: Request) {
 
       try {
         imageUrl = await uploadComplaintImage(buffer, secureFileName, imageFile.type);
-      } catch (uploadErr: any) {
-        return NextResponse.json({ error: uploadErr.message || "Failed to upload image." }, { status: 400 });
+      } catch (uploadErr: unknown) {
+        console.error("Storage upload failed:", uploadErr);
+        return NextResponse.json(
+          { error: "Unable to upload the attachment right now. Please try again later." },
+          { status: 500 }
+        );
       }
     }
 
     const currentYear = new Date().getFullYear();
-    let complaintRecord: any = null;
+    let complaintRecord: Complaint | null = null;
 
     // Concurrency-safe optimistic insert transaction loop
     let attempts = 0;
@@ -136,9 +137,15 @@ export async function POST(request: Request) {
 
         // Break loop on successful insert
         break;
-      } catch (err: any) {
+      } catch (err: unknown) {
         // P2002 is the Prisma unique constraint violation code (duplicate key)
-        if (err.code === "P2002" && attempts < maxAttempts) {
+        if (
+          err &&
+          typeof err === "object" &&
+          "code" in err &&
+          err.code === "P2002" &&
+          attempts < maxAttempts
+        ) {
           console.warn(`Conflict on complaint code generation. Attempt ${attempts} failed. Retrying...`);
           continue;
         }
