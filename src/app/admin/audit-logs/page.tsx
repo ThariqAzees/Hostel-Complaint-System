@@ -124,7 +124,13 @@ export default async function AdminAuditLogsPage({ searchParams }: AdminAuditLog
                 <tr key={log.id} className={styles.tr}>
                   <td className={`${styles.td} ${styles.timeCell}`}>{formatTimestamp(log.created_at)}</td>
                   <td className={`${styles.td} ${styles.userCell}`}>
-                    {log.user.name} <span style={{ fontWeight: 400, fontSize: "0.75rem", color: "var(--text-light)" }}>({log.user.role})</span>
+                    {log.user ? (
+                      <>
+                        {log.user.name} <span style={{ fontWeight: 400, fontSize: "0.75rem", color: "var(--text-light)" }}>({log.user.role})</span>
+                      </>
+                    ) : (
+                      <span style={{ fontStyle: "italic", color: "var(--text-light)" }}>Deleted User</span>
+                    )}
                   </td>
                   <td className={`${styles.td} ${styles.actionCell}`}>{getActionLabel(log.action)}</td>
                   <td className={`${styles.td} ${styles.entityCell} ${styles.mobileHidden}`}>

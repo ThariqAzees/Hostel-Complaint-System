@@ -302,9 +302,13 @@ export default async function AdminDashboard() {
                   <div className={styles.logContent}>
                     <span className={styles.logDesc}>{log.description}</span>
                     <div className={styles.logMeta}>
-                      <span style={{ fontWeight: 600 }}>{log.user.name}</span>
-                      <span>•</span>
-                      <span>{log.user.role}</span>
+                      <span style={{ fontWeight: 600 }}>{log.user ? log.user.name : "Deleted User"}</span>
+                      {log.user && (
+                        <>
+                          <span>•</span>
+                          <span>{log.user.role}</span>
+                        </>
+                      )}
                       <span>•</span>
                       <span className={styles.logTime}>{getRelativeTime(log.created_at)}</span>
                     </div>

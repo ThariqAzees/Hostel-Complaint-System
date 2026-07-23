@@ -152,11 +152,17 @@ export default async function AdminComplaintsPage({ searchParams }: AdminComplai
             <tbody>
               {complaints.map((complaint) => (
                 <tr key={complaint.id} className={styles.tr}>
-                  <td className={`${styles.td} ${styles.codeCell}`}>{complaint.complaint_code}</td>
+                  <td className={`${styles.td} ${styles.codeCell}`}>
+                    <Link href={`/admin/complaints/${complaint.id}`} style={{ color: "var(--primary)", fontWeight: 600, textDecoration: "none" }}>
+                      {complaint.complaint_code}
+                    </Link>
+                  </td>
                   <td className={`${styles.td} ${styles.studentCell}`}>{complaint.student.name}</td>
                   <td className={`${styles.td} ${styles.mobileHidden}`}>Room {complaint.student.room_number || "—"}</td>
                   <td className={styles.td} style={{ maxWidth: "240px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                    {complaint.title}
+                    <Link href={`/admin/complaints/${complaint.id}`} style={{ color: "var(--foreground)", textDecoration: "none" }}>
+                      {complaint.title}
+                    </Link>
                   </td>
                   <td className={`${styles.td} ${styles.mobileHidden}`}>{complaint.category}</td>
                   <td className={styles.td}>

@@ -15,7 +15,8 @@ import {
   AlertTriangle,
   ChevronLeft,
   ChevronRight,
-  HelpCircle
+  HelpCircle,
+  Trash2
 } from "lucide-react";
 
 interface Student {
@@ -65,6 +66,10 @@ export default function StudentManagement() {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [isResetSuccessOpen, setIsResetSuccessOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [isDeleteSubmitting, setIsDeleteSubmitting] = useState(false);
   
   // Active student for edit/reset actions
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
@@ -264,6 +269,48 @@ export default function StudentManagement() {
     } catch (err) {
       console.error(err);
       alert("A network error occurred.");
+    }
+  };
+
+  const handleDeleteOpen = (student: Student) => {
+    setSelectedStudent(student);
+    setDeleteConfirmText("");
+    setDeleteError(null);
+    setIsDeleteOpen(true);
+  };
+
+  const handleDeleteSubmit = async () => {
+    if (!selectedStudent) return;
+    if (deleteConfirmText !== "DELETE") return;
+
+    setDeleteError(null);
+    setIsDeleteSubmitting(true);
+
+    try {
+      const response = await fetch(`/api/admin/students/${selectedStudent.id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setDeleteError(data.error || "Failed to delete student.");
+        setIsDeleteSubmitting(false);
+        return;
+      }
+
+      setIsDeleteOpen(false);
+      setSelectedStudent(null);
+      setDeleteConfirmText("");
+      setIsDeleteSubmitting(false);
+      fetchStudents();
+    } catch (err) {
+      console.error(err);
+      setDeleteError("A network error occurred. Please try again.");
+      setIsDeleteSubmitting(false);
     }
   };
 
@@ -529,6 +576,14 @@ export default function StudentManagement() {
                           onClick={() => handleToggleActive(student)}
                         >
                           <Power size={16} />
+                        </button>
+                        <button
+                          type="button"
+                          className={`${styles.actionBtn} ${styles.actionBtnDanger}`}
+                          title="Delete Student"
+                          onClick={() => handleDeleteOpen(student)}
+                        >
+                          <Trash2 size={16} />
                         </button>
                       </div>
                     </td>
@@ -963,6 +1018,93 @@ export default function StudentManagement() {
                 }}
               >
                 Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* MODAL: Delete Student Confirmation */}
+      {isDeleteOpen && selectedStudent && (
+        <div className={styles.modalOverlay}>
+          <div className={`${styles.modal} animate-scale`} style={{ maxWidth: "450px" }}>
+            <div className={styles.modalHeader}>
+              <h2 className={styles.modalTitle} style={{ color: "var(--danger)" }}>Delete Student?</h2>
+              <button type="button" className={styles.closeBtn} onClick={() => {
+                setIsDeleteOpen(false);
+                setDeleteConfirmText("");
+                setDeleteError(null);
+              }}>
+                <X size={20} />
+              </button>
+            </div>
+            <div className={styles.modalBody}>
+              <p style={{ fontSize: "0.95rem", marginBottom: "12px", lineHeight: "1.4" }}>
+                You are about to delete:
+              </p>
+              <div style={{ background: "var(--background)", border: "1px solid var(--card-border)", padding: "12px", borderRadius: "var(--radius-sm)", marginBottom: "16px" }}>
+                <div style={{ fontWeight: 600, fontSize: "1.05rem" }}>{selectedStudent.name}</div>
+                <div style={{ fontSize: "0.85rem", color: "var(--text-muted)", fontFamily: "monospace", marginTop: "4px" }}>
+                  Registration Number: {selectedStudent.registration_number}
+                </div>
+                {selectedStudent.room_number && (
+                  <div style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginTop: "2px" }}>
+                    Room Number: {selectedStudent.room_number}
+                  </div>
+                )}
+              </div>
+              <p style={{ fontSize: "0.85rem", color: "var(--danger)", fontWeight: 600, marginBottom: "16px" }}>
+                This action cannot be undone.
+              </p>
+              
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: "16px" }}>
+                <label htmlFor="delete-confirm-input" style={{ fontSize: "0.8rem", fontWeight: 600, color: "var(--text-light)" }}>
+                  Type <span style={{ fontFamily: "monospace", fontWeight: 700, color: "var(--danger)" }}>DELETE</span> to confirm:
+                </label>
+                <input
+                  id="delete-confirm-input"
+                  type="text"
+                  className={styles.input}
+                  placeholder="Type DELETE..."
+                  value={deleteConfirmText}
+                  onChange={(e) => setDeleteConfirmText(e.target.value)}
+                  disabled={isDeleteSubmitting}
+                  style={{ width: "100%" }}
+                />
+              </div>
+
+              {deleteError && (
+                <div className={styles.errorBox} style={{ marginTop: "12px" }}>
+                  <AlertTriangle size={18} style={{ flexShrink: 0 }} />
+                  <span>{deleteError}</span>
+                </div>
+              )}
+            </div>
+            <div className={styles.modalFooter} style={{ display: "flex", gap: "12px" }}>
+              <button
+                type="button"
+                className={`${styles.btn} ${styles.btnOutline}`}
+                onClick={() => {
+                  setIsDeleteOpen(false);
+                  setDeleteConfirmText("");
+                  setDeleteError(null);
+                }}
+                disabled={isDeleteSubmitting}
+                style={{ flex: 1 }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className={`${styles.btn} ${styles.btnPrimary}`}
+                style={{ backgroundColor: "var(--danger)", borderColor: "var(--danger)", flex: 1 }}
+                disabled={deleteConfirmText !== "DELETE" || isDeleteSubmitting}
+                onClick={handleDeleteSubmit}
+              >
+                {isDeleteSubmitting ? (
+                  <div className="spinner" style={{ width: "16px", height: "16px", border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "white", borderRadius: "50%" }} />
+                ) : (
+                  "Delete Student Permanently"
+                )}
               </button>
             </div>
           </div>

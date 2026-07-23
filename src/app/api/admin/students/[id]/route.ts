@@ -38,7 +38,7 @@ export async function PUT(
       }
 
       // Update student details
-      const updatedStudent = await prisma.user.update({
+      await prisma.user.update({
         where: { id },
         data: {
           name,
@@ -71,7 +71,7 @@ export async function PUT(
       }
 
       // Update active status. If deactivating, increment token_version to invalidate sessions
-      const updatedStudent = await prisma.user.update({
+      await prisma.user.update({
         where: { id },
         data: {
           is_active: isActive,
@@ -135,6 +135,81 @@ export async function PUT(
     return NextResponse.json({ error: "Invalid action specified." }, { status: 400 });
   } catch (err) {
     console.error("Modify student error:", err);
+    return NextResponse.json({ error: "An internal server error occurred" }, { status: 500 });
+  }
+}
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  // CSRF validation
+  if (!validateCSRF(request)) {
+    return NextResponse.json({ error: "CSRF validation failed" }, { status: 403 });
+  }
+
+  const adminUser = await getSessionUser();
+  if (!adminUser) {
+    return NextResponse.json({ error: "Unauthenticated. Admin access required." }, { status: 401 });
+  }
+  if (adminUser.role !== "ADMIN") {
+    return NextResponse.json({ error: "Unauthorized. Admin access required." }, { status: 403 });
+  }
+
+  const { id } = await params;
+
+  try {
+    // Verify student exists and is indeed a STUDENT
+    const student = await prisma.user.findFirst({
+      where: { id, role: "STUDENT" },
+    });
+
+    if (!student) {
+      return NextResponse.json({ error: "Student not found." }, { status: 404 });
+    }
+
+    // Block if student has any existing complaints
+    const complaintsCount = await prisma.complaint.count({
+      where: { student_id: id },
+    });
+
+    if (complaintsCount > 0) {
+      return NextResponse.json(
+        { error: "Cannot delete this student because complaint records are associated with this account." },
+        { status: 409 }
+      );
+    }
+
+    // Execute deletion transaction
+    await prisma.$transaction(async (tx) => {
+      // Delete notifications related to the student
+      await tx.notification.deleteMany({
+        where: { user_id: id },
+      });
+
+      // Delete the student user record
+      await tx.user.delete({
+        where: { id },
+      });
+
+      // Write deletion Audit Log (performed_by is the current Admin)
+      await tx.auditLog.create({
+        data: {
+          performed_by: adminUser.id,
+          action: "STUDENT_DELETED",
+          entity_type: "User",
+          entity_id: student.id,
+          description: `Admin deleted student ${student.registration_number || "N/A"} (${student.name}).`,
+        },
+      });
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: "Student deleted successfully.",
+    });
+  } catch (err) {
+    console.error("Delete student error:", err);
     return NextResponse.json({ error: "An internal server error occurred" }, { status: 500 });
   }
 }

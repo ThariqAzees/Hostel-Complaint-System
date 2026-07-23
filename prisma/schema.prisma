@@ -120,8 +120,8 @@ model Notification {
 
 model AuditLog {
   id            String   @id @default(uuid())
-  performed_by  String   // User ID
-  user          User     @relation("UserAuditLogs", fields: [performed_by], references: [id], onDelete: Restrict)
+  performed_by  String?  // User ID, nullable to allow user deletion while preserving log history
+  user          User?    @relation("UserAuditLogs", fields: [performed_by], references: [id], onDelete: SetNull)
   action        String   // Action name (e.g., "CREATE_STUDENT", "IMPORT_EXCEL")
   entity_type   String   // Entity type modified
   entity_id     String   // Entity ID modified
