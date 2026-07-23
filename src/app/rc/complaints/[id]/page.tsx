@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import styles from "../../../student/complaints/[id]/details.module.css";
+import styles from "./rc-details.module.css";
 import RcActionsPanel from "./rc-actions-panel";
 import { ArrowLeft } from "lucide-react";
 
@@ -132,6 +132,7 @@ export default async function RcComplaintDetailsPage({ params }: RcComplaintDeta
           <div className={styles.imageSection}>
             <h2 className={styles.descriptionTitle}>Attached Photo</h2>
             <div className={styles.imageContainer}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={`/api/complaints/${complaint.id}/image`}
                 alt="Complaint Attachment"

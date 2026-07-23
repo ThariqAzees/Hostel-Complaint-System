@@ -286,11 +286,166 @@
 .badgeReopened { background: #fee2e2; color: #b91c1c; }
 .badgeClosed { background: #e0e7ff; color: #4338ca; }
 
+/* Overdue Card & Header */
+.overdueCard {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: 24px 28px;
+  margin-bottom: 32px;
+  box-shadow: var(--shadow-sm);
+}
+
+.overdueHeaderSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.overdueTitle {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--foreground);
+  margin: 0;
+}
+
+.overdueActionBadge {
+  display: inline-flex;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: rgba(239, 68, 68, 0.15);
+  color: #b91c1c;
+}
+
+/* Visibility toggling */
+.desktopTable {
+  display: block;
+}
+
+.mobileCardList {
+  display: none;
+}
+
+/* Mobile cards styling */
+.mobileCard {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.mobileCard:hover {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
+.mobileCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mobileCardCode {
+  font-family: monospace;
+  font-weight: 700;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.mobileCardBadgeRed {
+  background: #fee2e2;
+  color: #b91c1c;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+}
+
+.mobileCardTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--foreground);
+  margin: 0;
+  line-height: 1.4;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.mobileCardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mobileCardMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.mobileCardFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--card-border);
+  padding-top: 12px;
+  margin-top: 4px;
+}
+
+.mobileCardAction {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+@media (max-width: 768px) {
+  .overdueCard {
+    padding: 16px;
+  }
+  .overdueHeaderSection {
+    margin-bottom: 12px;
+  }
+  .overdueTitle {
+    font-size: 1.05rem;
+  }
+  .desktopTable {
+    display: none;
+  }
+  .mobileCardList {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .mobileHidden {
+    display: none !important;
+  }
+  .searchInput, .filterSelect {
+    font-size: 16px; /* Prevent auto-zoom on mobile */
+    min-height: 44px;
+  }
+}
+
 @media (max-width: 580px) {
   .filtersSection {
     flex-direction: column;
     align-items: stretch;
     gap: 12px;
+    padding: 16px 14px;
   }
   .searchWrapper, .filterWrapper {
     width: 100%;
@@ -311,11 +466,5 @@
     flex: 1;
     justify-content: center;
     min-height: 44px; /* touch target helper */
-  }
-}
-
-@media (max-width: 768px) {
-  .mobileHidden {
-    display: none !important;
   }
 }

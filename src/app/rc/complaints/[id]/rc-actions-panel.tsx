@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import styles from "../../../student/complaints/[id]/details.module.css";
+import styles from "./rc-details.module.css";
 import { Check, Clipboard, ShieldAlert } from "lucide-react";
 import { ComplaintStatus } from "@/generated/prisma/enums";
 

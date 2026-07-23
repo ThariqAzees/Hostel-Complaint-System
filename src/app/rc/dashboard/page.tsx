@@ -44,6 +44,8 @@ export default async function RcDashboardPage({ searchParams }: RcDashboardPageP
 
   const pageSize = 10;
   const skip = (page - 1) * pageSize;
+  // eslint-disable-next-line react-hooks/purity
+  const nowMs = Date.now();
 
   // Build filter object for all complaints
   const where: NonNullable<Parameters<typeof prisma.complaint.findMany>[0]>["where"] = {};
@@ -206,12 +208,12 @@ export default async function RcDashboardPage({ searchParams }: RcDashboardPageP
       </div>
 
       {overdueCount > 0 && (
-        <div style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", borderRadius: "var(--radius-md)", padding: "24px 28px", marginBottom: "32px", boxShadow: "var(--shadow-sm)" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-            <h2 style={{ fontFamily: "var(--font-display)", fontSize: "1.15rem", fontWeight: 700, color: "var(--foreground)" }}>Overdue Complaints</h2>
-            <span style={{ display: "inline-flex", padding: "4px 8px", borderRadius: "4px", fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase", background: "rgba(239, 68, 68, 0.15)", color: "#b91c1c" }}>Action Required</span>
+        <div className={styles.overdueCard}>
+          <div className={styles.overdueHeaderSection}>
+            <h2 className={styles.overdueTitle}>Overdue Complaints</h2>
+            <span className={styles.overdueActionBadge}>Action Required</span>
           </div>
-          <div style={{ overflowX: "auto" }}>
+          <div className={styles.desktopTable}>
             <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
               <thead>
                 <tr>
@@ -236,8 +238,7 @@ export default async function RcDashboardPage({ searchParams }: RcDashboardPageP
                     <td className={`${styles.td} ${styles.mobileHidden}`}>Room {complaint.student.room_number || "—"}</td>
                     <td className={`${styles.td} ${styles.mobileHidden}`}>{complaint.category}</td>
                     <td className={styles.td} style={{ color: "#ef4444", fontWeight: 700 }}>
-                      {/* eslint-disable-next-line react-hooks/purity */}
-                      {Math.floor((Date.now() - new Date(complaint.created_at).getTime()) / (1000 * 60 * 60 * 24))} Days
+                      {Math.floor((nowMs - new Date(complaint.created_at).getTime()) / (1000 * 60 * 60 * 24))} Days
                     </td>
                     <td className={styles.td}>
                       <span className={`${styles.badge} ${getStatusBadgeClass(complaint.status)}`}>
@@ -253,6 +254,37 @@ export default async function RcDashboardPage({ searchParams }: RcDashboardPageP
                 ))}
               </tbody>
             </table>
+          </div>
+
+          <div className={styles.mobileCardList}>
+            {overdueComplaintsList.map((complaint) => (
+              <Link
+                key={complaint.id}
+                href={`/rc/complaints/${complaint.id}`}
+                className={styles.mobileCard}
+              >
+                <div className={styles.mobileCardHeader}>
+                  <span className={styles.mobileCardCode}>{complaint.complaint_code}</span>
+                  <span className={styles.mobileCardBadgeRed}>OVERDUE</span>
+                </div>
+                <div className={styles.mobileCardBody}>
+                  <h4 className={styles.mobileCardTitle}>{complaint.title}</h4>
+                  <div className={styles.mobileCardMeta}>
+                    <span>Student: {complaint.student.name} • Room {complaint.student.room_number || "—"}</span>
+                    <span>Category: {complaint.category}</span>
+                    <span style={{ color: "#ef4444", fontWeight: 700 }}>
+                      Pending: {Math.floor((nowMs - new Date(complaint.created_at).getTime()) / (1000 * 60 * 60 * 24))} Days
+                    </span>
+                  </div>
+                </div>
+                <div className={styles.mobileCardFooter}>
+                  <span className={`${styles.badge} ${getStatusBadgeClass(complaint.status)}`}>
+                    {getStatusLabel(complaint.status)}
+                  </span>
+                  <span className={styles.mobileCardAction}>View Details →</span>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       )}
@@ -271,49 +303,82 @@ export default async function RcDashboardPage({ searchParams }: RcDashboardPageP
             <span>There are no complaints matching your current filters.</span>
           </div>
         ) : (
-          <div className={styles.tableWrapper}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th className={styles.th}>Code</th>
-                  <th className={styles.th}>Student Name</th>
-                  <th className={`${styles.th} ${styles.mobileHidden}`}>Room</th>
-                  <th className={styles.th}>Title</th>
-                  <th className={`${styles.th} ${styles.mobileHidden}`}>Category</th>
-                  <th className={styles.th}>Status</th>
-                  <th className={`${styles.th} ${styles.mobileHidden}`}>Raised On</th>
-                </tr>
-              </thead>
-              <tbody>
-                {complaints.map((complaint) => (
-                  <ClickableRow
-                    key={complaint.id}
-                    href={`/rc/complaints/${complaint.id}`}
-                    className={styles.tr}
-                  >
-                    <td className={`${styles.td} ${styles.codeCell}`}>{complaint.complaint_code}</td>
-                    <td className={styles.td} style={{ fontWeight: 600 }}>{complaint.student.name}</td>
-                    <td className={`${styles.td} ${styles.mobileHidden}`}>Room {complaint.student.room_number || "—"}</td>
-                    <td className={`${styles.td} ${styles.titleCell}`}>{complaint.title}</td>
-                    <td className={`${styles.td} ${styles.mobileHidden}`}>{complaint.category}</td>
-                    <td className={styles.td}>
-                      <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
-                        <span className={`${styles.badge} ${getStatusBadgeClass(complaint.status)}`}>
-                          {getStatusLabel(complaint.status)}
-                        </span>
-                        {complaint.overdue && (
-                          <span style={{ background: "#fee2e2", color: "#b91c1c", fontWeight: 700, padding: "4px 8px", borderRadius: "4px", fontSize: "0.7rem", textTransform: "uppercase" }}>
-                            OVERDUE
+          <>
+            <div className={`${styles.tableWrapper} ${styles.desktopTable}`}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th className={styles.th}>Code</th>
+                    <th className={styles.th}>Student Name</th>
+                    <th className={`${styles.th} ${styles.mobileHidden}`}>Room</th>
+                    <th className={styles.th}>Title</th>
+                    <th className={`${styles.th} ${styles.mobileHidden}`}>Category</th>
+                    <th className={styles.th}>Status</th>
+                    <th className={`${styles.th} ${styles.mobileHidden}`}>Raised On</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {complaints.map((complaint) => (
+                    <ClickableRow
+                      key={complaint.id}
+                      href={`/rc/complaints/${complaint.id}`}
+                      className={styles.tr}
+                    >
+                      <td className={`${styles.td} ${styles.codeCell}`}>{complaint.complaint_code}</td>
+                      <td className={styles.td} style={{ fontWeight: 600 }}>{complaint.student.name}</td>
+                      <td className={`${styles.td} ${styles.mobileHidden}`}>Room {complaint.student.room_number || "—"}</td>
+                      <td className={`${styles.td} ${styles.titleCell}`}>{complaint.title}</td>
+                      <td className={`${styles.td} ${styles.mobileHidden}`}>{complaint.category}</td>
+                      <td className={styles.td}>
+                        <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+                          <span className={`${styles.badge} ${getStatusBadgeClass(complaint.status)}`}>
+                            {getStatusLabel(complaint.status)}
                           </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className={`${styles.td} ${styles.mobileHidden}`}>{formatDate(complaint.created_at)}</td>
-                  </ClickableRow>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                          {complaint.overdue && (
+                            <span style={{ background: "#fee2e2", color: "#b91c1c", fontWeight: 700, padding: "4px 8px", borderRadius: "4px", fontSize: "0.7rem", textTransform: "uppercase" }}>
+                              OVERDUE
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className={`${styles.td} ${styles.mobileHidden}`}>{formatDate(complaint.created_at)}</td>
+                    </ClickableRow>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className={styles.mobileCardList}>
+              {complaints.map((complaint) => (
+                <Link
+                  key={complaint.id}
+                  href={`/rc/complaints/${complaint.id}`}
+                  className={styles.mobileCard}
+                >
+                  <div className={styles.mobileCardHeader}>
+                    <span className={styles.mobileCardCode}>{complaint.complaint_code}</span>
+                    {complaint.overdue && (
+                      <span className={styles.mobileCardBadgeRed}>OVERDUE</span>
+                    )}
+                  </div>
+                  <div className={styles.mobileCardBody}>
+                    <h4 className={styles.mobileCardTitle}>{complaint.title}</h4>
+                    <div className={styles.mobileCardMeta}>
+                      <span>Student: {complaint.student.name} • Room {complaint.student.room_number || "—"}</span>
+                      <span>Category: {complaint.category}</span>
+                      <span>Submitted: {formatDate(complaint.created_at)}</span>
+                    </div>
+                  </div>
+                  <div className={styles.mobileCardFooter}>
+                    <span className={`${styles.badge} ${getStatusBadgeClass(complaint.status)}`}>
+                      {getStatusLabel(complaint.status)}
+                    </span>
+                    <span className={styles.mobileCardAction}>View Details →</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </>
         )}
       </div>
 
