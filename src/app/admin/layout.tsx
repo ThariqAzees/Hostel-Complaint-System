@@ -1,4 +1,5 @@
 import React from "react";
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth";
 import Sidebar from "./sidebar";
@@ -6,6 +7,13 @@ import styles from "./admin-layout.module.css";
 import { APP_CONFIG } from "@/config/app-config";
 
 import { cookies } from "next/headers";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 interface AdminLayoutProps {
   children: React.ReactNode;

@@ -1,10 +1,18 @@
 import React from "react";
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth";
 import RcSidebar from "./sidebar";
 import styles from "./rc-layout.module.css";
 
 import { cookies } from "next/headers";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 interface RcLayoutProps {
   children: React.ReactNode;

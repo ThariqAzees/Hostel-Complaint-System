@@ -1,4 +1,5 @@
 import React from "react";
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth";
 import StudentHeader from "./header";
@@ -6,6 +7,13 @@ import styles from "./student-layout.module.css";
 import { APP_CONFIG } from "@/config/app-config";
 
 import { cookies } from "next/headers";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 interface StudentLayoutProps {
   children: React.ReactNode;

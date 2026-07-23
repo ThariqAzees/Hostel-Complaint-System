@@ -1,8 +1,16 @@
 import React from "react";
+import type { Metadata } from "next";
 import { getSessionUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import ChangePasswordForm from "./change-password-form";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export const dynamic = "force-dynamic";
 
