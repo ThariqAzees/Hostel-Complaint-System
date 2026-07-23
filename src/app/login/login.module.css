@@ -203,3 +203,15 @@
     font-size: 1.3rem;
   }
 }
+
+.transparencyNotice {
+  background: var(--background);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 24px;
+  text-align: left;
+}

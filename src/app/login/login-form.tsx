@@ -89,10 +89,14 @@ export default function LoginForm() {
           </button>
         </div>
 
+        <div className={styles.transparencyNotice}>
+          This portal is intended for authorized residents and hostel staff of Mantharai Block, Engineering College Hostels (ECH), for submitting, tracking, and managing hostel facility complaints. Please use only the credentials provided for this Hostel Complaint Management System. Do not enter credentials used for other university services.
+        </div>
+
         <form className={styles.form} onSubmit={handleSubmit}>
           <div className={styles.group}>
             <label htmlFor="username" className={styles.label}>
-              {tab === "student" ? "Registration Number" : "Email Address / Username"}
+              {tab === "student" ? "Hostel Portal Registration Number" : "Staff Email / Username"}
               {tab === "student" && <span className={styles.labelTip}>10 Digits</span>}
             </label>
             <input
@@ -110,7 +114,7 @@ export default function LoginForm() {
 
           <div className={styles.group}>
             <label htmlFor="password" className={styles.label}>
-              Password
+              Hostel Portal Password
               {tab === "student" && <span className={styles.labelTip}>Initial: DOB (DDMMYY)</span>}
             </label>
             <input
