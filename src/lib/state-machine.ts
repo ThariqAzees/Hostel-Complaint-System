@@ -82,10 +82,22 @@ export async function transitionComplaint(
       updateData.resolved_at = new Date();
     }
 
-    const updatedComplaint = await tx.complaint.update({
-      where: { id: complaintId },
+    const updateResult = await tx.complaint.updateMany({
+      where: { id: complaintId, status: complaint.status },
       data: updateData,
     });
+
+    if (updateResult.count === 0) {
+      throw new Error("Complaint status has changed or complaint was modified by another request.");
+    }
+
+    const updatedComplaint = await tx.complaint.findUnique({
+      where: { id: complaintId },
+    });
+
+    if (!updatedComplaint) {
+      throw new Error("Complaint not found after update.");
+    }
 
     // 7. Insert timeline event (ComplaintUpdate)
     await tx.complaintUpdate.create({
@@ -111,26 +123,28 @@ export async function transitionComplaint(
         notifTitle = "Complaint Acknowledged";
         notifMessage = `Your complaint ${complaint.complaint_code} has been acknowledged.`;
         break;
-      case "STUDENT_MARK_COMPLETED":
-        // Notify active RC
-        const rcUser = await tx.user.findFirst({
+      case "STUDENT_MARK_COMPLETED": {
+        // Notify all active RCs
+        const rcUsers = await tx.user.findMany({
           where: { role: "RC", is_active: true },
           select: { id: true },
         });
-        if (rcUser) recipientIds = [rcUser.id];
+        recipientIds = rcUsers.map((rc) => rc.id);
         notifTitle = "Maintenance Marked Completed";
         notifMessage = `Student ${studentName} marked complaint ${complaint.complaint_code} as completed. Pending RC final verification.`;
         break;
-      case "STUDENT_REOPEN":
-        // Notify active RC
-        const rcUserForReopen = await tx.user.findFirst({
+      }
+      case "STUDENT_REOPEN": {
+        // Notify all active RCs
+        const rcUsersForReopen = await tx.user.findMany({
           where: { role: "RC", is_active: true },
           select: { id: true },
         });
-        if (rcUserForReopen) recipientIds = [rcUserForReopen.id];
+        recipientIds = rcUsersForReopen.map((rc) => rc.id);
         notifTitle = "Complaint Reopened";
         notifMessage = `Student ${studentName} reopened complaint ${complaint.complaint_code} with remarks: ${remarks || "None"}.`;
         break;
+      }
       case "RC_VERIFY_CLOSE":
         recipientIds = [complaint.student_id];
         notifTitle = "Complaint Closed";

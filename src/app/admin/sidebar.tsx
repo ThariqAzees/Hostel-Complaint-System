@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "./admin-layout.module.css";
-import { LayoutDashboard, Users, AlertCircle, ClipboardList, LogOut, KeyRound, Menu, X } from "lucide-react";
+import { LayoutDashboard, Users, AlertCircle, ClipboardList, LogOut, KeyRound, Menu, X, UserCheck } from "lucide-react";
 
 interface SidebarProps {
   user: {
@@ -52,6 +52,7 @@ export default function Sidebar({ user }: SidebarProps) {
   const navItems = [
     { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
     { name: "Students", href: "/admin/students", icon: Users },
+    { name: "RC Management", href: "/admin/rcs", icon: UserCheck },
     { name: "Complaints Queue", href: "/admin/complaints", icon: AlertCircle },
     { name: "Audit Logs", href: "/admin/audit-logs", icon: ClipboardList },
     { name: "Change Password", href: "/change-password", icon: KeyRound },
