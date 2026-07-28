@@ -7,6 +7,7 @@ import styles from "./complaints.module.css";
 import AdminComplaintsFilter from "./complaints-filter";
 import { ChevronLeft, ChevronRight, FileText } from "lucide-react";
 import { ComplaintStatus } from "@/generated/prisma/enums";
+import DeleteComplaintButton from "./delete-button";
 
 export const dynamic = "force-dynamic";
 
@@ -147,6 +148,7 @@ export default async function AdminComplaintsPage({ searchParams }: AdminComplai
                 <th className={`${styles.th} ${styles.mobileHidden}`}>Category</th>
                 <th className={styles.th}>Status</th>
                 <th className={`${styles.th} ${styles.mobileHidden}`}>Date</th>
+                <th className={styles.th}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -171,6 +173,17 @@ export default async function AdminComplaintsPage({ searchParams }: AdminComplai
                     </span>
                   </td>
                   <td className={`${styles.td} ${styles.mobileHidden}`}>{formatDate(complaint.created_at)}</td>
+                  <td className={styles.td}>
+                    <DeleteComplaintButton complaint={{
+                      id: complaint.id,
+                      complaint_code: complaint.complaint_code,
+                      title: complaint.title,
+                      studentName: complaint.student.name,
+                      roomNumber: complaint.student.room_number || "—",
+                      category: complaint.category,
+                      status: complaint.status
+                    }} />
+                  </td>
                 </tr>
               ))}
             </tbody>

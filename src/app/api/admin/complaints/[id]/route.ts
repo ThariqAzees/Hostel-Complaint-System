@@ -30,36 +30,49 @@ export async function DELETE(
     });
 
     if (!complaint) {
-      return NextResponse.json({ error: "Complaint not found." }, { status: 404 });
+      return NextResponse.json({ error: "This complaint has already been removed." }, { status: 404 });
+    }
+
+    // Safety Check: Only CLOSED complaints are eligible for deletion
+    if (complaint.status !== "CLOSED") {
+      return NextResponse.json(
+        { error: "Complaint must be closed before permanent deletion." },
+        { status: 409 }
+      );
     }
 
     const imageUrl = complaint.image_url;
 
     // Run database deletion inside a transaction
     await prisma.$transaction(async (tx) => {
-      // 1. Delete associated notifications
-      await tx.notification.deleteMany({
-        where: { complaint_id: id },
-      });
-
-      // 2. Delete associated timeline history updates
+      // 1. Delete associated timeline history updates
       await tx.complaintUpdate.deleteMany({
         where: { complaint_id: id },
       });
 
-      // 3. Delete the complaint record
+      // 2. Delete associated notifications
+      await tx.notification.deleteMany({
+        where: { complaint_id: id },
+      });
+
+      // 3. Delete associated audit log entries directly tied to this complaint
+      await tx.auditLog.deleteMany({
+        where: { entity_type: "Complaint", entity_id: id },
+      });
+
+      // 4. Delete the complaint record
       await tx.complaint.delete({
         where: { id },
       });
 
-      // 4. Create persistent AuditLog (performed_by is the current Admin)
+      // 5. Create persistent AuditLog (performed_by is the current Admin)
       await tx.auditLog.create({
         data: {
           performed_by: adminUser.id,
           action: "COMPLAINT_DELETED",
           entity_type: "Complaint",
-          entity_id: id,
-          description: `Admin permanently deleted complaint ${complaint.complaint_code} ("${complaint.title}") submitted by student ${complaint.student.registration_number || "N/A"}.`,
+          entity_id: complaint.complaint_code,
+          description: `Complaint ${complaint.complaint_code} was permanently deleted by Admin.`,
         },
       });
     });

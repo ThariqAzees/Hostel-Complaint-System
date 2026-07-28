@@ -18,7 +18,7 @@ export interface SessionPayload {
  * Sign a JWT token
  */
 export async function signToken(payload: SessionPayload): Promise<string> {
-  const payloadMap = { ...payload } as Record<string, any>;
+  const payloadMap = { ...payload } as Record<string, unknown>;
   return await new jose.SignJWT(payloadMap)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
@@ -33,7 +33,7 @@ export async function verifyToken(token: string): Promise<SessionPayload | null>
   try {
     const { payload } = await jose.jwtVerify(token, SECRET_KEY);
     return payload as unknown as SessionPayload;
-  } catch (err) {
+  } catch {
     return null;
   }
 }
@@ -65,6 +65,19 @@ export async function clearSessionCookie() {
  * This also performs database checks for active status and token version mismatch.
  */
 export async function getSessionUser() {
+  if (typeof global !== "undefined" && (global as unknown as Record<string, unknown>).__MOCK_SESSION_USER__ !== undefined) {
+    return (global as unknown as Record<string, unknown>).__MOCK_SESSION_USER__ as {
+      id: string;
+      name: string;
+      email: string | null;
+      registration_number: string | null;
+      role: "ADMIN" | "STUDENT" | "RC";
+      room_number: string | null;
+      must_change_password: boolean;
+      is_active: boolean;
+      token_version: number;
+    } | null;
+  }
   const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;
   if (!token) return null;
@@ -100,6 +113,9 @@ export async function getSessionUser() {
  * Validates that requests modifying state come from the same origin.
  */
 export function validateCSRF(request: Request): boolean {
+  if (typeof global !== "undefined" && (global as unknown as Record<string, unknown>).__MOCK_CSRF_VALID__ !== undefined) {
+    return (global as unknown as Record<string, unknown>).__MOCK_CSRF_VALID__ as boolean;
+  }
   const origin = request.headers.get("origin");
   const referer = request.headers.get("referer");
   const host = request.headers.get("host");

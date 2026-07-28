@@ -175,7 +175,7 @@ export async function DELETE(
 
     if (complaintsCount > 0) {
       return NextResponse.json(
-        { error: "Cannot delete this student because complaint records are associated with this account." },
+        { error: "This student still has complaint records. Delete all complaints before deleting the student." },
         { status: 409 }
       );
     }
