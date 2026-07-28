@@ -45,7 +45,19 @@ export async function GET(request: Request) {
   } catch (err) {
     console.error("Logout GET error:", err);
   }
-  const { searchParams } = new URL(request.url);
-  const redirectTo = searchParams.get("redirect") || "/login";
-  return NextResponse.redirect(new URL(redirectTo, request.url));
+  
+  const host = request.headers.get("x-forwarded-host") || request.headers.get("host");
+  const proto = request.headers.get("x-forwarded-proto") || "http";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (host ? `${proto}://${host}` : "");
+  
+  let redirectUrl: URL;
+  try {
+    const { searchParams } = new URL(request.url);
+    const redirectTo = searchParams.get("redirect") || "/login";
+    redirectUrl = baseUrl ? new URL(redirectTo, baseUrl) : new URL(redirectTo, request.url);
+  } catch {
+    redirectUrl = baseUrl ? new URL("/login", baseUrl) : new URL("/login", "http://localhost:3000");
+  }
+
+  return NextResponse.redirect(redirectUrl);
 }

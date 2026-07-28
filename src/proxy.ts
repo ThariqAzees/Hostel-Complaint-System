@@ -14,6 +14,13 @@ interface SessionPayload {
   mustChangePassword: boolean;
 }
 
+function getRedirectUrl(path: string, request: NextRequest): URL {
+  const host = request.headers.get("x-forwarded-host") || request.headers.get("host");
+  const proto = request.headers.get("x-forwarded-proto") || "http";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (host ? `${proto}://${host}` : "");
+  return baseUrl ? new URL(path, baseUrl) : new URL(path, request.url);
+}
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get(COOKIE_NAME)?.value;
@@ -39,7 +46,7 @@ export async function proxy(request: NextRequest) {
         response.cookies.delete(COOKIE_NAME);
         return response;
       }
-      const response = NextResponse.redirect(new URL("/login", request.url));
+      const response = NextResponse.redirect(getRedirectUrl("/login", request));
       response.cookies.delete(COOKIE_NAME);
       return response;
     }
@@ -67,7 +74,7 @@ export async function proxy(request: NextRequest) {
   if (!payload) {
     // If trying to access protected dashboards/APIs, redirect to login
     if (isAdminRoute || isStudentRoute || isRcRoute || isChangePasswordPage) {
-      return NextResponse.redirect(new URL("/login", request.url));
+      return NextResponse.redirect(getRedirectUrl("/login", request));
     }
     if (isApiRoute && !pathname.startsWith("/api/auth/login")) {
       return new NextResponse(
@@ -81,15 +88,15 @@ export async function proxy(request: NextRequest) {
   // 4. Authenticated user redirects
   if (isLoginPage) {
     if (payload.mustChangePassword) {
-      return NextResponse.redirect(new URL("/change-password", request.url));
+      return NextResponse.redirect(getRedirectUrl("/change-password", request));
     }
     // Redirect to correct dashboard
     if (payload.role === "ADMIN") {
-      return NextResponse.redirect(new URL("/admin/dashboard", request.url));
+      return NextResponse.redirect(getRedirectUrl("/admin/dashboard", request));
     } else if (payload.role === "RC") {
-      return NextResponse.redirect(new URL("/rc/dashboard", request.url));
+      return NextResponse.redirect(getRedirectUrl("/rc/dashboard", request));
     } else if (payload.role === "STUDENT") {
-      return NextResponse.redirect(new URL("/student/dashboard", request.url));
+      return NextResponse.redirect(getRedirectUrl("/student/dashboard", request));
     }
   }
 
@@ -102,18 +109,18 @@ export async function proxy(request: NextRequest) {
         { status: 403, headers: { "Content-Type": "application/json" } }
       );
     }
-    return NextResponse.redirect(new URL("/change-password", request.url));
+    return NextResponse.redirect(getRedirectUrl("/change-password", request));
   }
 
   // 7. Role-based authorization
   if (isAdminRoute && payload.role !== "ADMIN") {
-    return NextResponse.redirect(new URL("/login", request.url));
+    return NextResponse.redirect(getRedirectUrl("/login", request));
   }
   if (isRcRoute && payload.role !== "RC") {
-    return NextResponse.redirect(new URL("/login", request.url));
+    return NextResponse.redirect(getRedirectUrl("/login", request));
   }
   if (isStudentRoute && payload.role !== "STUDENT") {
-    return NextResponse.redirect(new URL("/login", request.url));
+    return NextResponse.redirect(getRedirectUrl("/login", request));
   }
 
   // API Role-based authorization guards

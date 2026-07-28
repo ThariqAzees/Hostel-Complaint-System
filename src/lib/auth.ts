@@ -119,8 +119,9 @@ export function validateCSRF(request: Request): boolean {
   const origin = request.headers.get("origin");
   const referer = request.headers.get("referer");
   const host = request.headers.get("host");
+  const proto = request.headers.get("x-forwarded-proto") || "http";
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || `http://${host}`;
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || `${proto}://${host}`;
 
   if (origin) {
     return origin === appUrl || origin.replace(/^https?:\/\//, "") === host;
