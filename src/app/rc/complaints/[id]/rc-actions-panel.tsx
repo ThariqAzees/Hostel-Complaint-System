@@ -117,8 +117,8 @@ export default function RcActionsPanel({ complaintId, status }: RcActionsPanelPr
   return (
     <div style={{ marginBottom: "32px" }}>
       {error && (
-        <div className="error-box" style={{ display: "flex", gap: "8px", alignItems: "center", marginBottom: "16px" }}>
-          <ShieldAlert size={16} />
+        <div className={styles.errorBox}>
+          <ShieldAlert size={18} style={{ flexShrink: 0 }} />
           <span>{error}</span>
         </div>
       )}

@@ -99,6 +99,7 @@
 .list {
   max-height: 280px;
   overflow-y: auto;
+  overscroll-behavior-y: contain;
   display: flex;
   flex-direction: column;
   flex: 1;

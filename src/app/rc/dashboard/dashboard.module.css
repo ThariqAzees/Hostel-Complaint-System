@@ -37,7 +37,15 @@
 
 @media (max-width: 480px) {
   .statsGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .statCard {
+    padding: 10px 12px;
+  }
+  .statValue {
+    font-size: 1.25rem;
   }
 }
 

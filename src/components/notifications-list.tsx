@@ -44,6 +44,7 @@ export default function NotificationsList({ role }: NotificationsListProps) {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchNotifications();
   }, []);
 
@@ -135,8 +136,8 @@ export default function NotificationsList({ role }: NotificationsListProps) {
       </div>
 
       {error && (
-        <div className="error-box" style={{ display: "flex", gap: "8px", alignItems: "center", marginBottom: "20px" }}>
-          <ShieldAlert size={16} />
+        <div className={styles.errorBox}>
+          <ShieldAlert size={18} style={{ flexShrink: 0 }} />
           <span>{error}</span>
         </div>
       )}
