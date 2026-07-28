@@ -15,8 +15,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized. Admin access required." }, { status: 401 });
   }
 
+  let importId: string | null = null;
+
   try {
-    const { importId } = await request.json();
+    const body = await request.json();
+    importId = body.importId;
 
     if (!importId) {
       return NextResponse.json({ error: "Import Batch ID is required." }, { status: 400 });
@@ -31,7 +34,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Import batch not found." }, { status: 404 });
     }
 
-    if (importBatch.status !== "PENDING") {
+    if (importBatch.status !== "PENDING" && importBatch.status !== "FAILED") {
       return NextResponse.json(
         { error: `This batch has already been processed. Current status: ${importBatch.status}` },
         { status: 400 }
@@ -142,17 +145,15 @@ export async function POST(request: Request) {
   } catch (err) {
     console.error("Confirm import error:", err);
     
-    // Attempt to revert status back to PENDING so admin can retry if transaction fails
-    try {
-      const { importId } = await request.clone().json();
-      if (importId) {
+    if (importId) {
+      try {
         await prisma.studentImport.update({
           where: { id: importId },
-          data: { status: "PENDING" },
+          data: { status: "FAILED" },
         });
+      } catch (e) {
+        console.error("Failed to update status to FAILED:", e);
       }
-    } catch (e) {
-      console.error("Revert status failed:", e);
     }
 
     return NextResponse.json({ error: "An error occurred during database insertion." }, { status: 500 });
