@@ -281,6 +281,7 @@
   box-shadow: var(--shadow-xl);
   overflow: hidden;
   max-height: 90vh;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   color: var(--foreground);
@@ -291,6 +292,7 @@
   display: flex;
   flex-direction: column;
   flex: 1;
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -332,6 +334,7 @@
 .modalBody {
   padding: 20px 24px;
   overflow-y: auto;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 16px;

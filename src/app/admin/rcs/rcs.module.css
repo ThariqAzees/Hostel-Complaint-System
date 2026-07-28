@@ -268,8 +268,17 @@
   box-shadow: var(--shadow-xl);
   overflow: hidden;
   max-height: 90vh;
+  min-height: 0;
   display: flex;
   flex-direction: column;
+}
+
+.modal form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .modalHeader {
@@ -301,6 +310,10 @@
 .modalBody {
   padding: 28px;
   overflow-y: auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .errorBox {
