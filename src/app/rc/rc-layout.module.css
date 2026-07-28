@@ -4,6 +4,12 @@
   background: var(--background);
 }
 
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+}
+
 /* Sidebar structure */
 .sidebar {
   width: 260px;
