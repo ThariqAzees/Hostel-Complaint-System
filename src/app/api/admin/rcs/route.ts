@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
 import { getSessionUser, validateCSRF } from "@/lib/auth";
-import { Prisma } from "@/generated/prisma";
+import { Prisma } from "@/generated/prisma/client";
 
 /**
  * GET: Fetch RC accounts with pagination, filtering, searching, and sorting
