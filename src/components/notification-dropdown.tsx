@@ -43,13 +43,14 @@ export default function NotificationDropdown({ role }: NotificationDropdownProps
         setNotifications(data.notifications || []);
         setUnreadCount(data.unreadCount || 0);
       }
-    } catch (err) {
+    } catch {
       // Silent catch to prevent console errors during server boot/rebuilds
     }
   };
 
   useEffect(() => {
     // Fetch once on mount
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchNotifications();
 
     const interval = setInterval(() => {
@@ -162,16 +163,34 @@ export default function NotificationDropdown({ role }: NotificationDropdownProps
   };
 
   const viewAllHref = role === "STUDENT" ? "/student/notifications" : "/rc/notifications";
+  const alignmentClass = role === "RC" ? styles.dropdownRC : styles.dropdownSTUDENT;
 
   return (
     <div className={styles.wrapper} ref={dropdownRef}>
-      <button type="button" className={styles.bellBtn} onClick={handleToggle}>
+      <button
+        type="button"
+        className={styles.bellBtn}
+        onClick={handleToggle}
+        aria-haspopup="true"
+        aria-expanded={isOpen}
+        aria-controls="notification-dropdown-menu"
+        aria-label="Toggle notifications menu"
+      >
         <Bell size={20} />
-        {unreadCount > 0 && <span className={styles.badge}>{unreadCount}</span>}
+        {unreadCount > 0 && (
+          <span key={unreadCount} className={styles.badge}>
+            {unreadCount}
+          </span>
+        )}
       </button>
 
       {isOpen && (
-        <div className={styles.dropdown}>
+        <div
+          id="notification-dropdown-menu"
+          role="region"
+          aria-label="Notifications"
+          className={`${styles.dropdown} ${alignmentClass}`}
+        >
           <div className={styles.header}>
             <span className={styles.title}>Notifications</span>
             {unreadCount > 0 && (

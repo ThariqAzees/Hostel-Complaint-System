@@ -3,18 +3,19 @@
 import React, { useState, useEffect, useCallback } from "react";
 import styles from "./rcs.module.css";
 import { 
-  Plus, 
-  Search, 
-  Edit2, 
-  Power, 
-  RotateCcw, 
-  X, 
-  HelpCircle, 
-  Trash2, 
-  ChevronLeft, 
-  ChevronRight, 
-  AlertTriangle 
-} from "lucide-react";
+   Plus, 
+   Search, 
+   Edit2, 
+   Power, 
+   RotateCcw, 
+   X, 
+   HelpCircle, 
+   Trash2, 
+   ChevronLeft, 
+   ChevronRight, 
+   AlertTriangle 
+ } from "lucide-react";
+import { PasswordInput } from "@/components/password-input";
 
 interface RC {
   id: string;
@@ -547,8 +548,7 @@ export default function RCManagement() {
                   </div>
                   <div className={styles.formGroup}>
                     <label className={styles.formLabel}>Initial Password</label>
-                    <input
-                      type="password"
+                    <PasswordInput
                       className={styles.formInput}
                       value={formPassword}
                       onChange={(e) => setFormPassword(e.target.value)}
@@ -693,8 +693,7 @@ export default function RCManagement() {
                 <div className={styles.formGrid}>
                   <div className={styles.formGroup}>
                     <label className={styles.formLabel}>New Password</label>
-                    <input
-                      type="password"
+                    <PasswordInput
                       className={styles.formInput}
                       value={formPassword}
                       onChange={(e) => setFormPassword(e.target.value)}
@@ -705,8 +704,7 @@ export default function RCManagement() {
                   </div>
                   <div className={styles.formGroup}>
                     <label className={styles.formLabel}>Confirm Password</label>
-                    <input
-                      type="password"
+                    <PasswordInput
                       className={styles.formInput}
                       value={formConfirmPassword}
                       onChange={(e) => setFormConfirmPassword(e.target.value)}

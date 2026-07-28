@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import styles from "./change-password.module.css";
 import { Check, X, ShieldAlert, KeyRound } from "lucide-react";
+import { PasswordInput } from "@/components/password-input";
 
 interface ChangePasswordFormProps {
   mustChangePassword: boolean;
@@ -102,8 +103,7 @@ export default function ChangePasswordForm({ mustChangePassword }: ChangePasswor
             <label htmlFor="newPassword" className={styles.label}>
               New Password
             </label>
-            <input
-              type="password"
+            <PasswordInput
               id="newPassword"
               className={styles.input}
               value={newPassword}
@@ -156,8 +156,7 @@ export default function ChangePasswordForm({ mustChangePassword }: ChangePasswor
             <label htmlFor="confirmPassword" className={styles.label}>
               Confirm Password
             </label>
-            <input
-              type="password"
+            <PasswordInput
               id="confirmPassword"
               className={styles.input}
               value={confirmPassword}

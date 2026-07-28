@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Trash2, X, AlertTriangle } from "lucide-react";
 import styles from "./complaints.module.css";
+import { useModalAccessibility } from "@/hooks/use-modal-accessibility";
 
 interface ComplaintData {
   id: string;
@@ -28,18 +29,22 @@ export default function DeleteComplaintButton({ complaint }: DeleteComplaintButt
 
   const isClosed = complaint.status === "CLOSED";
 
-  const handleOpen = () => {
-    setConfirmText("");
-    setError(null);
-    setIsOpen(true);
-  };
-
   const handleClose = () => {
     if (isSubmitting) return;
     setIsOpen(false);
     setConfirmText("");
     setError(null);
   };
+
+  const modalRef = useModalAccessibility(isOpen, handleClose);
+
+  const handleOpen = () => {
+    setConfirmText("");
+    setError(null);
+    setIsOpen(true);
+  };
+
+
 
   const handleDelete = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,11 +92,16 @@ export default function DeleteComplaintButton({ complaint }: DeleteComplaintButt
       {isOpen && (
         <div className={styles.modalOverlay} onClick={handleClose}>
           <div
+            ref={modalRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-modal-title"
+            aria-describedby="delete-modal-description"
             className={`${styles.modal} animate-scale`}
             onClick={(e) => e.stopPropagation()}
           >
             <div className={styles.modalHeader}>
-              <h2 className={styles.modalTitle} style={{ color: "var(--danger)" }}>
+              <h2 id="delete-modal-title" className={styles.modalTitle} style={{ color: "var(--danger)" }}>
                 Delete Complaint?
               </h2>
               <button
@@ -117,7 +127,7 @@ export default function DeleteComplaintButton({ complaint }: DeleteComplaintButt
                   </div>
                 )}
 
-                <div className={styles.warningMessage}>
+                <div id="delete-modal-description" className={styles.warningMessage}>
                   You are about to permanently delete this complaint and all associated records.
                   <span className={styles.warningAlert}> This action cannot be undone.</span>
                 </div>
@@ -167,6 +177,9 @@ export default function DeleteComplaintButton({ complaint }: DeleteComplaintButt
                       required
                       autoComplete="off"
                     />
+                    <span className={styles.helperText}>
+                      Type DELETE to permanently remove this complaint.
+                    </span>
                   </div>
                 )}
 

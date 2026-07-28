@@ -256,6 +256,7 @@
 }
 
 /* Modals */
+/* Modals */
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -269,29 +270,38 @@
   justify-content: center;
   z-index: 1000;
   padding: 20px;
+  animation: overlayFadeIn 200ms ease forwards;
 }
 
 .modal {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   border-radius: var(--radius-lg);
-  width: 100%;
-  max-width: 500px;
+  width: min(600px, 90vw);
   box-shadow: var(--shadow-xl);
   overflow: hidden;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
   color: var(--foreground);
+  animation: modalScaleUp 200ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.modal form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
 }
 
 .modalHeader {
-  padding: 20px 24px;
+  padding: 16px 24px;
   border-bottom: 1px solid var(--card-border);
   display: flex;
   justify-content: space-between;
   align-items: center;
   background: rgba(var(--primary-rgb), 0.01);
+  flex-shrink: 0;
 }
 
 .modalTitle {
@@ -320,12 +330,13 @@
 }
 
 .modalBody {
-  padding: 24px;
+  padding: 20px 24px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 16px;
   text-align: left;
+  flex: 1;
 }
 
 .modalFooter {
@@ -335,6 +346,7 @@
   justify-content: flex-end;
   gap: 12px;
   background: rgba(var(--primary-rgb), 0.01);
+  flex-shrink: 0;
 }
 
 /* Info and Warning Banners */
@@ -376,15 +388,16 @@
   background: var(--background);
   border: 1px solid var(--card-border);
   border-radius: var(--radius-sm);
-  padding: 14px 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
 }
 
 .detailRow {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 4px;
   font-size: 0.85rem;
   border-bottom: 1px dashed var(--card-border);
   padding-bottom: 8px;
@@ -403,11 +416,15 @@
 .detailValue {
   color: var(--foreground);
   font-weight: 500;
-  text-align: right;
-  max-width: 70%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  word-break: break-word;
+  white-space: normal;
+}
+
+.helperText {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  display: block;
 }
 
 /* Form Styles */
@@ -514,6 +531,16 @@
   100% { transform: rotate(360deg); }
 }
 
+@keyframes overlayFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalScaleUp {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
 @keyframes scale {
   0% { transform: scale(0.95); opacity: 0; }
   100% { transform: scale(1); opacity: 1; }
@@ -521,4 +548,69 @@
 
 .animate-scale {
   animation: scale 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Tablet styles (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .modal {
+    width: 90vw;
+    max-height: 90vh;
+  }
+  .modalHeader {
+    padding: 14px 20px;
+  }
+  .modalBody {
+    padding: 16px 20px;
+    gap: 14px;
+  }
+  .modalFooter {
+    padding: 12px 20px;
+  }
+}
+
+/* Mobile styles (< 768px) */
+@media (max-width: 767px) {
+  .modal {
+    width: 95vw;
+    max-height: 90vh;
+    border-radius: 16px;
+  }
+  
+  .modalHeader {
+    padding: 14px 16px;
+  }
+  
+  .modalBody {
+    padding: 16px;
+    gap: 12px;
+  }
+  
+  .modalFooter {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .modalFooter button {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+  
+  .detailGrid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .modalOverlay {
+    animation: none !important;
+    transition: none !important;
+  }
+  .modal {
+    animation: none !important;
+    transition: none !important;
+  }
 }

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import styles from "./login.module.css";
 import { ShieldAlert } from "lucide-react";
 import { APP_CONFIG } from "@/config/app-config";
+import { PasswordInput } from "@/components/password-input";
 
 export default function LoginForm() {
   const [tab, setTab] = useState<"student" | "staff">("student");
@@ -117,8 +118,7 @@ export default function LoginForm() {
               Hostel Portal Password
               {tab === "student" && <span className={styles.labelTip}>Initial: DOB (DDMMYY)</span>}
             </label>
-            <input
-              type="password"
+            <PasswordInput
               id="password"
               className={styles.input}
               value={password}
