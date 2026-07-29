@@ -91,9 +91,16 @@ export async function GET(request: Request) {
       c => c.column_name === "updated_at"
     );
 
-    // 5. Run npx prisma migrate status using the local package CLI bundle
+    // 5. Check if prisma.config.js exists and run version query
     const projectRoot = process.cwd();
+    const fs = await import("fs");
+    diagnostics.prismaConfigExists = fs.existsSync(path.join(projectRoot, "prisma.config.js"));
+
     const prismaCliPath = path.join(projectRoot, "node_modules", "prisma", "build", "index.js");
+    const versionResult = await runCommand(`node "${prismaCliPath}" -v`);
+    diagnostics.prismaCliVersion = versionResult.stdout.trim() || versionResult.stderr.trim();
+
+    // 6. Run npx prisma migrate status using the local package CLI bundle
     const statusResult = await runCommand(`node "${prismaCliPath}" migrate status`);
     
     diagnostics.migrateStatus = {
