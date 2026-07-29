@@ -12,7 +12,7 @@ export async function register() {
     const cleanDbUrl = (process.env.DATABASE_URL || "").trim();
     const env = { ...process.env, DATABASE_URL: cleanDbUrl };
 
-    exec(`node "${prismaCliPath}" migrate deploy`, { env }, (error, stdout, stderr) => {
+    exec(`node "${prismaCliPath}" migrate deploy --config prisma.config.mjs`, { env }, (error, stdout, stderr) => {
       if (error) {
         console.error("[Instrumentation Hook] Database migration failed:", error.message);
         console.error("[Instrumentation Hook] Stderr:", stderr);

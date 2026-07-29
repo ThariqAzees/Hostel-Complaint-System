@@ -44,7 +44,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 COPY --from=builder --chown=nextjs:nodejs /app/src/generated/prisma ./src/generated/prisma
 COPY --from=builder --chown=nextjs:nodejs /app/runner-start.js ./runner-start.js
-COPY --from=builder --chown=nextjs:nodejs /app/prisma.config.js ./prisma.config.js
+COPY --from=builder --chown=nextjs:nodejs /app/prisma.config.mjs ./prisma.config.mjs
 
 # Prepare uploads directory with proper permissions for non-root user
 RUN mkdir -p public/uploads/complaints && chown -R nextjs:nodejs public/uploads

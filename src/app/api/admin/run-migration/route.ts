@@ -28,7 +28,7 @@ export async function POST(request: Request) {
   const projectRoot = process.cwd();
   // Call Prisma CLI bundle directly with absolute path
   const prismaCliPath = path.join(projectRoot, "node_modules", "prisma", "build", "index.js");
-  const command = `node "${prismaCliPath}" migrate deploy`;
+  const command = `node "${prismaCliPath}" migrate deploy --config prisma.config.mjs`;
 
   console.log(`Running manual migration command: ${command}`);
   const result = await runCommand(command);

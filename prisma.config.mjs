@@ -1,12 +1,14 @@
+import { defineConfig, env } from "prisma/config";
+
+// Load .env file manually for local development
 try {
-  require("dotenv").config();
+  const dotenv = await import("dotenv");
+  dotenv.config();
 } catch (e) {
   // dotenv is only present in development environments
 }
 
-const { defineConfig, env } = require("prisma/config");
-
-module.exports = defineConfig({
+export default defineConfig({
   schema: "prisma/schema.prisma",
   datasource: {
     url: env("DATABASE_URL"),
