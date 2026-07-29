@@ -37,6 +37,7 @@ async function simulateConfirmImport(importId: string, forceErrorOnRegNo?: strin
     const concurrencyLimit = Number(process.env.IMPORT_HASH_CONCURRENCY) || 8;
     const heartbeatTimeoutSeconds = Number(process.env.IMPORT_HEARTBEAT_TIMEOUT_SECONDS) || 120;
     const heartbeatIntervalMs = (Number(process.env.IMPORT_HEARTBEAT_INTERVAL_SECONDS) || 10) * 1000;
+    const hashRounds = Number(process.env.IMPORT_PASSWORD_HASH_ROUNDS) || 4;
 
     // 1. Retrieve and update status to PROCESSING
     const importBatch = await prisma.studentImport.findUnique({
@@ -82,7 +83,7 @@ async function simulateConfirmImport(importId: string, forceErrorOnRegNo?: strin
       recordsToHash,
       async (record) => {
         const tempPasswordStr = formatDobToPassword(record.date_of_birth);
-        const tempPasswordHash = await bcrypt.hash(tempPasswordStr, 10);
+        const tempPasswordHash = await bcrypt.hash(tempPasswordStr, hashRounds);
 
         // Update heartbeat if heartbeatIntervalMs has elapsed and no update is currently in progress
         if (Date.now() - lastHeartbeatTime >= heartbeatIntervalMs && !isHeartbeatUpdating) {

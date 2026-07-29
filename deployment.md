@@ -69,6 +69,9 @@ IMPORT_HEARTBEAT_TIMEOUT_SECONDS=120
 
 # Interval (in seconds) between database heartbeat updates during import processing (default: 10)
 IMPORT_HEARTBEAT_INTERVAL_SECONDS=10
+
+# Bcrypt salt rounds used for temporary password hashing during student import (default: 4 for speed and event loop safety)
+IMPORT_PASSWORD_HASH_ROUNDS=4
 ```
 
 ---
