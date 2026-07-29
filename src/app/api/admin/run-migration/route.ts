@@ -6,7 +6,9 @@ import path from "path";
 // Execute command in a promise to handle async
 function runCommand(cmd: string): Promise<{ stdout: string; stderr: string; code: number }> {
   return new Promise((resolve) => {
-    exec(cmd, (error, stdout, stderr) => {
+    const cleanDbUrl = (process.env.DATABASE_URL || "").trim();
+    const env = { ...process.env, DATABASE_URL: cleanDbUrl };
+    exec(cmd, { env }, (error, stdout, stderr) => {
       resolve({
         stdout,
         stderr,
