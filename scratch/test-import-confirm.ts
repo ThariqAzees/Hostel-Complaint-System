@@ -171,15 +171,18 @@ async function runTests() {
   }
 
   // ----------------------------------------------------
-  // TEST 1: Large Import (75 students) - Must complete successfully
+  // TEST 1: Large Import (500 students) - Must complete successfully
   // ----------------------------------------------------
-  console.log("\n[TEST 1] Testing large import of 75 students with bounded concurrency & periodic heartbeat...");
+  console.log("\n[TEST 1] Testing large import of 500 students with bounded concurrency & periodic heartbeat...");
+  
+  const memBefore = process.memoryUsage().heapUsed;
   const t1Start = Date.now();
+  
   const batch1 = await prisma.studentImport.create({
     data: {
       uploaded_by: admin.id,
       original_filename: "large_import.xlsx",
-      total_records: 75,
+      total_records: 500,
       successful_records: 0,
       failed_records: 0,
       status: "PENDING",
@@ -187,10 +190,10 @@ async function runTests() {
   });
 
   const mockRecords = [];
-  for (let i = 1; i <= 75; i++) {
+  for (let i = 1; i <= 500; i++) {
     mockRecords.push({
       import_id: batch1.id,
-      registration_number: `30231050${String(i).padStart(2, "0")}`,
+      registration_number: `3023105${String(i).padStart(3, "0")}`,
       name: `Student Number ${i}`,
       date_of_birth: new Date("2005-05-15"),
       room_number: `${100 + i}`,
@@ -199,17 +202,20 @@ async function runTests() {
   }
 
   await prisma.importRecord.createMany({ data: mockRecords });
-  console.log("  Created batch and 75 import records. Starting confirm...");
+  console.log("  Created batch and 500 import records. Starting confirm...");
 
   await simulateConfirmImport(batch1.id);
   const t1Duration = Date.now() - t1Start;
+  const memAfter = process.memoryUsage().heapUsed;
+  const peakMemDelta = (memAfter - memBefore) / 1024 / 1024;
 
   const resultBatch1 = await prisma.studentImport.findUnique({ where: { id: batch1.id } });
   console.log(`  Resulting status: ${resultBatch1?.status}`);
   console.log(`  Imported count: ${resultBatch1?.successful_records}`);
   console.log(`  Total time taken: ${t1Duration}ms`);
+  console.log(`  Heap memory delta: ${peakMemDelta.toFixed(2)} MB`);
 
-  if (resultBatch1?.status === "CONFIRMED" && resultBatch1.successful_records === 75) {
+  if (resultBatch1?.status === "CONFIRMED" && resultBatch1.successful_records === 500) {
     console.log("  [PASS] Large import completed successfully.");
   } else {
     console.error("  [FAIL] Large import failed.");
@@ -217,7 +223,7 @@ async function runTests() {
 
   // Cleanup Test 1
   await prisma.user.deleteMany({
-    where: { registration_number: { startsWith: "30231050" } }
+    where: { registration_number: { startsWith: "3023105" } }
   });
   await prisma.importRecord.deleteMany({ where: { import_id: batch1.id } });
   await prisma.studentImport.delete({ where: { id: batch1.id } });
