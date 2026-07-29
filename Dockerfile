@@ -43,7 +43,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # Ensure Prisma schema and generated files are available for runtime Prisma client
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 COPY --from=builder --chown=nextjs:nodejs /app/src/generated/prisma ./src/generated/prisma
-COPY --from=builder --chown=nextjs:nodejs /app/entrypoint.sh ./entrypoint.sh
+COPY --from=builder --chown=nextjs:nodejs /app/runner-start.js ./runner-start.js
 
 # Prepare uploads directory with proper permissions for non-root user
 RUN mkdir -p public/uploads/complaints && chown -R nextjs:nodejs public/uploads
@@ -52,4 +52,4 @@ USER nextjs
 
 EXPOSE 3000
 
-CMD ["./entrypoint.sh"]
+CMD ["node", "runner-start.js"]
