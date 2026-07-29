@@ -5,8 +5,8 @@ try {
   execSync("npx prisma migrate deploy", { stdio: "inherit" });
   console.log("Database migrations applied successfully!");
 } catch (error) {
-  console.error("Database migration failed:", error);
-  process.exit(1);
+  console.error("WARNING: Database migration failed during startup:", error);
+  console.log("Proceeding to start the application server anyway...");
 }
 
 console.log("Starting Next.js application server...");
