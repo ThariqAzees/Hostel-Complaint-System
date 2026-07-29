@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized. Admin access required." }, { status: 401 });
   }
 
-  let importId: string | null = null;
+  let importId: string | undefined = undefined;
 
   try {
     const body = await request.json();
@@ -23,6 +23,28 @@ export async function POST(request: Request) {
 
     if (!importId) {
       return NextResponse.json({ error: "Import Batch ID is required." }, { status: 400 });
+    }
+
+    // Load configuration from environment variables
+    const concurrencyLimit = Number(process.env.IMPORT_HASH_CONCURRENCY) || 8;
+    const heartbeatTimeoutSeconds = Number(process.env.IMPORT_HEARTBEAT_TIMEOUT_SECONDS) || 120;
+    const heartbeatIntervalMs = (Number(process.env.IMPORT_HEARTBEAT_INTERVAL_SECONDS) || 10) * 1000;
+
+    // Auto-recovery: If this specific batch is stuck in PROCESSING for more than heartbeatTimeoutSeconds, reset it to FAILED
+    const timeoutThreshold = new Date(Date.now() - heartbeatTimeoutSeconds * 1000);
+    const staleBatch = await prisma.studentImport.findFirst({
+      where: {
+        id: importId,
+        status: "PROCESSING",
+        updated_at: { lt: timeoutThreshold },
+      },
+    });
+
+    if (staleBatch) {
+      await prisma.studentImport.update({
+        where: { id: importId },
+        data: { status: "FAILED" },
+      });
     }
 
     // Retrieve the import batch
@@ -79,37 +101,69 @@ export async function POST(request: Request) {
     });
     const dbRegNumbers = new Set(allDbStudents.map((u) => u.registration_number));
 
-    // Process insertions in transaction/batch
-    await prisma.$transaction(async (tx) => {
-      for (const record of validRecords) {
-        // Double check database duplicates right before inserting
-        if (dbRegNumbers.has(record.registration_number)) {
-          errors.push(`Registration Number ${record.registration_number} was created recently by another process.`);
-          continue;
-        }
+    // Filter out duplicates and prepare records for hashing
+    const recordsToHash: typeof validRecords = [];
+    for (const record of validRecords) {
+      if (dbRegNumbers.has(record.registration_number)) {
+        errors.push(`Registration Number ${record.registration_number} was created recently by another process.`);
+        continue;
+      }
+      recordsToHash.push(record);
+      dbRegNumbers.add(record.registration_number); // Add to set to prevent duplicates within the same batch
+    }
 
-        // Generate temporary DOB-based password
+    let lastHeartbeatTime = Date.now();
+    let isHeartbeatUpdating = false;
+
+    // Hash passwords in parallel with bounded concurrency outside database transaction
+    const hashedRecords = await mapWithConcurrency(
+      recordsToHash,
+      async (record) => {
         const tempPasswordStr = formatDobToPassword(record.date_of_birth);
         const tempPasswordHash = await bcrypt.hash(tempPasswordStr, 10);
 
-        // Create student account
+        // Update heartbeat if heartbeatIntervalMs has elapsed and no update is currently in progress
+        if (Date.now() - lastHeartbeatTime >= heartbeatIntervalMs && !isHeartbeatUpdating) {
+          isHeartbeatUpdating = true;
+          try {
+            await prisma.studentImport.update({
+              where: { id: importId },
+              data: { status: "PROCESSING" }, // Updates updated_at column to default(now)
+            });
+            lastHeartbeatTime = Date.now();
+          } catch (e) {
+            console.error("Failed to update import heartbeat:", e);
+          } finally {
+            isHeartbeatUpdating = false;
+          }
+        }
+
+        return {
+          record,
+          tempPasswordHash,
+        };
+      },
+      concurrencyLimit
+    );
+
+    // Process insertions in transaction/batch (database writes only, extremely fast)
+    await prisma.$transaction(async (tx) => {
+      for (const item of hashedRecords) {
         await tx.user.create({
           data: {
-            registration_number: record.registration_number,
-            name: record.name,
-            date_of_birth: record.date_of_birth,
-            room_number: record.room_number,
-            email: record.email,
-            phone_number: record.phone_number,
-            password_hash: tempPasswordHash,
+            registration_number: item.record.registration_number,
+            name: item.record.name,
+            date_of_birth: item.record.date_of_birth,
+            room_number: item.record.room_number,
+            email: item.record.email,
+            phone_number: item.record.phone_number,
+            password_hash: item.tempPasswordHash,
             role: "STUDENT",
             must_change_password: true,
             is_active: true,
           },
         });
-
         importedCount++;
-        dbRegNumbers.add(record.registration_number); // Add to local set to prevent duplicates in same batch
       }
     });
 
@@ -158,4 +212,27 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ error: "An error occurred during database insertion." }, { status: 500 });
   }
+}
+
+/**
+ * Maps items asynchronously using a bounded concurrency pool.
+ */
+async function mapWithConcurrency<T, U>(
+  items: T[],
+  fn: (item: T) => Promise<U>,
+  concurrencyLimit: number
+): Promise<U[]> {
+  const results: U[] = new Array(items.length);
+  let currentIndex = 0;
+
+  async function worker() {
+    while (currentIndex < items.length) {
+      const index = currentIndex++;
+      results[index] = await fn(items[index]);
+    }
+  }
+
+  const workers = Array.from({ length: Math.min(concurrencyLimit, items.length) }, worker);
+  await Promise.all(workers);
+  return results;
 }

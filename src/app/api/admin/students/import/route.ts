@@ -74,6 +74,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Excel sheet is empty." }, { status: 400 });
     }
 
+    // Auto-recovery: transition any stale PROCESSING imports (heartbeat older than configured timeout) to FAILED
+    const heartbeatTimeoutSeconds = Number(process.env.IMPORT_HEARTBEAT_TIMEOUT_SECONDS) || 120;
+    const timeoutThreshold = new Date(Date.now() - heartbeatTimeoutSeconds * 1000);
+    await prisma.studentImport.updateMany({
+      where: {
+        status: "PROCESSING",
+        updated_at: { lt: timeoutThreshold },
+      },
+      data: {
+        status: "FAILED",
+      },
+    });
+
     // Create a new StudentImport record as PENDING
     const studentImport = await prisma.studentImport.create({
       data: {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import styles from "./students.module.css";
 import { 
   Plus, 
@@ -50,6 +50,8 @@ interface ImportRecord {
 }
 
 export default function StudentManagement() {
+  const isConfirmingRef = useRef(false);
+
   // Student List State
   const [students, setStudents] = useState<Student[]>([]);
   const [search, setSearch] = useState("");
@@ -354,8 +356,9 @@ export default function StudentManagement() {
 
   // Confirm bulk import
   const handleConfirmImport = async () => {
-    if (!importBatch) return;
+    if (!importBatch || isImportConfirming || isConfirmingRef.current) return;
 
+    isConfirmingRef.current = true;
     setIsImportConfirming(true);
     setImportError(null);
 
@@ -371,6 +374,7 @@ export default function StudentManagement() {
       if (!response.ok) {
         setImportError(data.error || "Failed to process import confirmation.");
         setIsImportConfirming(false);
+        isConfirmingRef.current = false;
         return;
       }
 
@@ -384,6 +388,7 @@ export default function StudentManagement() {
       console.error(err);
       setImportError("An error occurred during confirmation.");
       setIsImportConfirming(false);
+      isConfirmingRef.current = false;
     }
   };
 
@@ -407,6 +412,7 @@ export default function StudentManagement() {
     setImportSuccessMsg(null);
     setIsImportUploading(false);
     setIsImportConfirming(false);
+    isConfirmingRef.current = false;
   };
 
   const formatDate = (dateStr: string) => {

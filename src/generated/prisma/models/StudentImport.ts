@@ -47,6 +47,7 @@ export type StudentImportMinAggregateOutputType = {
   failed_records: number | null
   status: string | null
   created_at: Date | null
+  updated_at: Date | null
 }
 
 export type StudentImportMaxAggregateOutputType = {
@@ -58,6 +59,7 @@ export type StudentImportMaxAggregateOutputType = {
   failed_records: number | null
   status: string | null
   created_at: Date | null
+  updated_at: Date | null
 }
 
 export type StudentImportCountAggregateOutputType = {
@@ -69,6 +71,7 @@ export type StudentImportCountAggregateOutputType = {
   failed_records: number
   status: number
   created_at: number
+  updated_at: number
   _all: number
 }
 
@@ -94,6 +97,7 @@ export type StudentImportMinAggregateInputType = {
   failed_records?: true
   status?: true
   created_at?: true
+  updated_at?: true
 }
 
 export type StudentImportMaxAggregateInputType = {
@@ -105,6 +109,7 @@ export type StudentImportMaxAggregateInputType = {
   failed_records?: true
   status?: true
   created_at?: true
+  updated_at?: true
 }
 
 export type StudentImportCountAggregateInputType = {
@@ -116,6 +121,7 @@ export type StudentImportCountAggregateInputType = {
   failed_records?: true
   status?: true
   created_at?: true
+  updated_at?: true
   _all?: true
 }
 
@@ -214,6 +220,7 @@ export type StudentImportGroupByOutputType = {
   failed_records: number
   status: string
   created_at: Date
+  updated_at: Date
   _count: StudentImportCountAggregateOutputType | null
   _avg: StudentImportAvgAggregateOutputType | null
   _sum: StudentImportSumAggregateOutputType | null
@@ -248,6 +255,7 @@ export type StudentImportWhereInput = {
   failed_records?: Prisma.IntFilter<"StudentImport"> | number
   status?: Prisma.StringFilter<"StudentImport"> | string
   created_at?: Prisma.DateTimeFilter<"StudentImport"> | Date | string
+  updated_at?: Prisma.DateTimeFilter<"StudentImport"> | Date | string
   uploader?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   records?: Prisma.ImportRecordListRelationFilter
 }
@@ -261,6 +269,7 @@ export type StudentImportOrderByWithRelationInput = {
   failed_records?: Prisma.SortOrder
   status?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
+  updated_at?: Prisma.SortOrder
   uploader?: Prisma.UserOrderByWithRelationInput
   records?: Prisma.ImportRecordOrderByRelationAggregateInput
 }
@@ -277,6 +286,7 @@ export type StudentImportWhereUniqueInput = Prisma.AtLeast<{
   failed_records?: Prisma.IntFilter<"StudentImport"> | number
   status?: Prisma.StringFilter<"StudentImport"> | string
   created_at?: Prisma.DateTimeFilter<"StudentImport"> | Date | string
+  updated_at?: Prisma.DateTimeFilter<"StudentImport"> | Date | string
   uploader?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   records?: Prisma.ImportRecordListRelationFilter
 }, "id">
@@ -290,6 +300,7 @@ export type StudentImportOrderByWithAggregationInput = {
   failed_records?: Prisma.SortOrder
   status?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
+  updated_at?: Prisma.SortOrder
   _count?: Prisma.StudentImportCountOrderByAggregateInput
   _avg?: Prisma.StudentImportAvgOrderByAggregateInput
   _max?: Prisma.StudentImportMaxOrderByAggregateInput
@@ -309,6 +320,7 @@ export type StudentImportScalarWhereWithAggregatesInput = {
   failed_records?: Prisma.IntWithAggregatesFilter<"StudentImport"> | number
   status?: Prisma.StringWithAggregatesFilter<"StudentImport"> | string
   created_at?: Prisma.DateTimeWithAggregatesFilter<"StudentImport"> | Date | string
+  updated_at?: Prisma.DateTimeWithAggregatesFilter<"StudentImport"> | Date | string
 }
 
 export type StudentImportCreateInput = {
@@ -319,6 +331,7 @@ export type StudentImportCreateInput = {
   failed_records: number
   status?: string
   created_at?: Date | string
+  updated_at?: Date | string
   uploader: Prisma.UserCreateNestedOneWithoutImportsInput
   records?: Prisma.ImportRecordCreateNestedManyWithoutImportInput
 }
@@ -332,6 +345,7 @@ export type StudentImportUncheckedCreateInput = {
   failed_records: number
   status?: string
   created_at?: Date | string
+  updated_at?: Date | string
   records?: Prisma.ImportRecordUncheckedCreateNestedManyWithoutImportInput
 }
 
@@ -343,6 +357,7 @@ export type StudentImportUpdateInput = {
   failed_records?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   uploader?: Prisma.UserUpdateOneRequiredWithoutImportsNestedInput
   records?: Prisma.ImportRecordUpdateManyWithoutImportNestedInput
 }
@@ -356,6 +371,7 @@ export type StudentImportUncheckedUpdateInput = {
   failed_records?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   records?: Prisma.ImportRecordUncheckedUpdateManyWithoutImportNestedInput
 }
 
@@ -368,6 +384,7 @@ export type StudentImportCreateManyInput = {
   failed_records: number
   status?: string
   created_at?: Date | string
+  updated_at?: Date | string
 }
 
 export type StudentImportUpdateManyMutationInput = {
@@ -378,6 +395,7 @@ export type StudentImportUpdateManyMutationInput = {
   failed_records?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StudentImportUncheckedUpdateManyInput = {
@@ -389,6 +407,7 @@ export type StudentImportUncheckedUpdateManyInput = {
   failed_records?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StudentImportListRelationFilter = {
@@ -410,6 +429,7 @@ export type StudentImportCountOrderByAggregateInput = {
   failed_records?: Prisma.SortOrder
   status?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
+  updated_at?: Prisma.SortOrder
 }
 
 export type StudentImportAvgOrderByAggregateInput = {
@@ -427,6 +447,7 @@ export type StudentImportMaxOrderByAggregateInput = {
   failed_records?: Prisma.SortOrder
   status?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
+  updated_at?: Prisma.SortOrder
 }
 
 export type StudentImportMinOrderByAggregateInput = {
@@ -438,6 +459,7 @@ export type StudentImportMinOrderByAggregateInput = {
   failed_records?: Prisma.SortOrder
   status?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
+  updated_at?: Prisma.SortOrder
 }
 
 export type StudentImportSumOrderByAggregateInput = {
@@ -515,6 +537,7 @@ export type StudentImportCreateWithoutUploaderInput = {
   failed_records: number
   status?: string
   created_at?: Date | string
+  updated_at?: Date | string
   records?: Prisma.ImportRecordCreateNestedManyWithoutImportInput
 }
 
@@ -526,6 +549,7 @@ export type StudentImportUncheckedCreateWithoutUploaderInput = {
   failed_records: number
   status?: string
   created_at?: Date | string
+  updated_at?: Date | string
   records?: Prisma.ImportRecordUncheckedCreateNestedManyWithoutImportInput
 }
 
@@ -567,6 +591,7 @@ export type StudentImportScalarWhereInput = {
   failed_records?: Prisma.IntFilter<"StudentImport"> | number
   status?: Prisma.StringFilter<"StudentImport"> | string
   created_at?: Prisma.DateTimeFilter<"StudentImport"> | Date | string
+  updated_at?: Prisma.DateTimeFilter<"StudentImport"> | Date | string
 }
 
 export type StudentImportCreateWithoutRecordsInput = {
@@ -577,6 +602,7 @@ export type StudentImportCreateWithoutRecordsInput = {
   failed_records: number
   status?: string
   created_at?: Date | string
+  updated_at?: Date | string
   uploader: Prisma.UserCreateNestedOneWithoutImportsInput
 }
 
@@ -589,6 +615,7 @@ export type StudentImportUncheckedCreateWithoutRecordsInput = {
   failed_records: number
   status?: string
   created_at?: Date | string
+  updated_at?: Date | string
 }
 
 export type StudentImportCreateOrConnectWithoutRecordsInput = {
@@ -615,6 +642,7 @@ export type StudentImportUpdateWithoutRecordsInput = {
   failed_records?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   uploader?: Prisma.UserUpdateOneRequiredWithoutImportsNestedInput
 }
 
@@ -627,6 +655,7 @@ export type StudentImportUncheckedUpdateWithoutRecordsInput = {
   failed_records?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StudentImportCreateManyUploaderInput = {
@@ -637,6 +666,7 @@ export type StudentImportCreateManyUploaderInput = {
   failed_records: number
   status?: string
   created_at?: Date | string
+  updated_at?: Date | string
 }
 
 export type StudentImportUpdateWithoutUploaderInput = {
@@ -647,6 +677,7 @@ export type StudentImportUpdateWithoutUploaderInput = {
   failed_records?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   records?: Prisma.ImportRecordUpdateManyWithoutImportNestedInput
 }
 
@@ -658,6 +689,7 @@ export type StudentImportUncheckedUpdateWithoutUploaderInput = {
   failed_records?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   records?: Prisma.ImportRecordUncheckedUpdateManyWithoutImportNestedInput
 }
 
@@ -669,6 +701,7 @@ export type StudentImportUncheckedUpdateManyWithoutUploaderInput = {
   failed_records?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -711,6 +744,7 @@ export type StudentImportSelect<ExtArgs extends runtime.Types.Extensions.Interna
   failed_records?: boolean
   status?: boolean
   created_at?: boolean
+  updated_at?: boolean
   uploader?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   records?: boolean | Prisma.StudentImport$recordsArgs<ExtArgs>
   _count?: boolean | Prisma.StudentImportCountOutputTypeDefaultArgs<ExtArgs>
@@ -725,6 +759,7 @@ export type StudentImportSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   failed_records?: boolean
   status?: boolean
   created_at?: boolean
+  updated_at?: boolean
   uploader?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["studentImport"]>
 
@@ -737,6 +772,7 @@ export type StudentImportSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   failed_records?: boolean
   status?: boolean
   created_at?: boolean
+  updated_at?: boolean
   uploader?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["studentImport"]>
 
@@ -749,9 +785,10 @@ export type StudentImportSelectScalar = {
   failed_records?: boolean
   status?: boolean
   created_at?: boolean
+  updated_at?: boolean
 }
 
-export type StudentImportOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "uploaded_by" | "original_filename" | "total_records" | "successful_records" | "failed_records" | "status" | "created_at", ExtArgs["result"]["studentImport"]>
+export type StudentImportOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "uploaded_by" | "original_filename" | "total_records" | "successful_records" | "failed_records" | "status" | "created_at" | "updated_at", ExtArgs["result"]["studentImport"]>
 export type StudentImportInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   uploader?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   records?: boolean | Prisma.StudentImport$recordsArgs<ExtArgs>
@@ -779,6 +816,7 @@ export type $StudentImportPayload<ExtArgs extends runtime.Types.Extensions.Inter
     failed_records: number
     status: string
     created_at: Date
+    updated_at: Date
   }, ExtArgs["result"]["studentImport"]>
   composites: {}
 }
@@ -1212,6 +1250,7 @@ export interface StudentImportFieldRefs {
   readonly failed_records: Prisma.FieldRef<"StudentImport", 'Int'>
   readonly status: Prisma.FieldRef<"StudentImport", 'String'>
   readonly created_at: Prisma.FieldRef<"StudentImport", 'DateTime'>
+  readonly updated_at: Prisma.FieldRef<"StudentImport", 'DateTime'>
 }
     
 

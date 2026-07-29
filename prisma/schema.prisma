@@ -143,6 +143,7 @@ model StudentImport {
   failed_records     Int
   status             String         @default("PENDING") // PENDING, CONFIRMED, REJECTED
   created_at         DateTime       @default(now())
+  updated_at         DateTime       @default(now()) @updatedAt
   records            ImportRecord[]
 
   @@map("student_imports")

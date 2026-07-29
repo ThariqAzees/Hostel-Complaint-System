@@ -59,6 +59,16 @@ NEXT_PUBLIC_APP_URL="http://localhost:3000"
 
 # Node Environment
 NODE_ENV="development"
+
+# --- Student Import Optimization Settings ---
+# Concurrency limit for parallel password hashing (default: 8)
+IMPORT_HASH_CONCURRENCY=8
+
+# Timeout (in seconds) after which a processing batch is considered stuck/failed (default: 120)
+IMPORT_HEARTBEAT_TIMEOUT_SECONDS=120
+
+# Interval (in seconds) between database heartbeat updates during import processing (default: 10)
+IMPORT_HEARTBEAT_INTERVAL_SECONDS=10
 ```
 
 ---

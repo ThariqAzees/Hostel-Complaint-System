@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "student_imports" ADD COLUMN "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;

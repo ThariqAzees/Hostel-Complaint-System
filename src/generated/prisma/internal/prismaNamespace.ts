@@ -1054,7 +1054,8 @@ export const StudentImportScalarFieldEnum = {
   successful_records: 'successful_records',
   failed_records: 'failed_records',
   status: 'status',
-  created_at: 'created_at'
+  created_at: 'created_at',
+  updated_at: 'updated_at'
 } as const
 
 export type StudentImportScalarFieldEnum = (typeof StudentImportScalarFieldEnum)[keyof typeof StudentImportScalarFieldEnum]
