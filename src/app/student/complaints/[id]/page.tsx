@@ -1,4 +1,5 @@
 import React from "react";
+import { formatIST } from "@/lib/date";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth";
@@ -74,13 +75,7 @@ export default async function StudentComplaintDetailsPage({ params }: ComplaintD
   };
 
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    return formatIST(date);
   };
 
   const isAwaitingConfirmation = complaint.status === "AWAITING_STUDENT_CONFIRMATION";

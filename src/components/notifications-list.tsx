@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { formatIST } from "@/lib/date";
 import { useRouter } from "next/navigation";
 import styles from "./notifications-list.module.css";
 import { Bell, CheckCheck, ShieldAlert } from "lucide-react";
@@ -102,14 +103,7 @@ export default function NotificationsList({ role }: NotificationsListProps) {
   };
 
   const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    return formatIST(dateStr);
   };
 
   if (isLoading) {

@@ -1,4 +1,5 @@
 import React, { Suspense } from "react";
+import { formatIST } from "@/lib/date";
 import Link from "next/link";
 import ClickableRow from "@/components/clickable-row";
 import { redirect } from "next/navigation";
@@ -116,11 +117,7 @@ export default async function StudentComplaintsPage({ searchParams }: Complaints
   };
 
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
+    return formatIST(date);
   };
 
   return (

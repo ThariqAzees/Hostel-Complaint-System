@@ -1,4 +1,5 @@
 import React, { Suspense } from "react";
+import { formatIST } from "@/lib/date";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth";
@@ -113,11 +114,7 @@ export default async function AdminComplaintsPage({ searchParams }: AdminComplai
   };
 
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
+    return formatIST(date);
   };
 
   return (

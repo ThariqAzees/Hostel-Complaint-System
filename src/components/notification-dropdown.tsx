@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { formatIST } from "@/lib/date";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Bell } from "lucide-react";
@@ -153,13 +154,7 @@ export default function NotificationDropdown({ role }: NotificationDropdownProps
   };
 
   const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    return formatIST(dateStr);
   };
 
   const viewAllHref = role === "STUDENT" ? "/student/notifications" : "/rc/notifications";
